@@ -3,96 +3,101 @@
 import { useState } from "react";
 
 export default function SettingsPage() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Fake user data
-  const user = {
+  const [user, setUser] = useState({
     name: "John Doe",
     email: "johndoe@example.com",
     password: "mypassword123",
     cardNumber: "1234 5678 9012 3456",
     ccv: "123",
     expirationDate: "12/26",
+  });
+
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState(user);
+
+  const handleSave = () => {
+    setUser(editData);
+    setEditing(false);
   };
 
-  // Mask sensitive info
-  const mask = (value: string, visible = false) => {
-    if (visible) return value;
-    return value.replace(/./g, "•");
-  };
-
-  // Example notifications
-  const notifications = [
-    "New login from Chrome on Windows",
-    "Monthly statement available",
-    "Payment reminder: Electricity bill",
-    "Promotional offers",
-  ];
+  const mask = (value: string) => "•".repeat(value.length);
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-        maxWidth: "700px",
-        margin: "auto",
-        background: darkMode ? "#1c1c1c" : "#fff",
-        color: darkMode ? "#f0f0f0" : "#000",
-        borderRadius: "8px",
-        boxShadow: "0 0 15px rgba(0,0,0,0.1)",
-      }}
-    >
-      <h1>Account Settings</h1>
+    <div className="min-h-screen p-6 bg-slate-50 text-slate-900">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
 
-      {/* Personal Info */}
-      <section style={{ marginTop: "1.5rem" }}>
-        <h2>Personal Information</h2>
-        <div style={{ display: "grid", gap: "1rem", marginTop: "0.5rem" }}>
-          <div>
-            <strong>Name:</strong> {user.name}
+        <div className="bg-white rounded-2xl shadow p-6">
+          <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
+
+          <div className="grid sm:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-slate-500">Full Name</p>
+              {editing ? (
+                <input className="border p-1 rounded w-full" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
+              ) : (
+                <p className="font-medium">{user.name}</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">Email Address</p>
+              {editing ? (
+                <input className="border p-1 rounded w-full" value={editData.email} onChange={(e) => setEditData({ ...editData, email: e.target.value })} />
+              ) : (
+                <p className="font-medium">{user.email}</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">Password</p>
+              {editing ? (
+                <input type="password" className="border p-1 rounded w-full" value={editData.password} onChange={(e) => setEditData({ ...editData, password: e.target.value })} />
+              ) : (
+                <p className="font-medium tracking-widest">{mask(user.password)}</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">Card Number</p>
+              {editing ? (
+                <input className="border p-1 rounded w-full" value={editData.cardNumber} onChange={(e) => setEditData({ ...editData, cardNumber: e.target.value })} />
+              ) : (
+                <p className="font-medium">{mask(user.cardNumber)}</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">CVV</p>
+              {editing ? (
+                <input type="password" className="border p-1 rounded w-full" value={editData.ccv} onChange={(e) => setEditData({ ...editData, ccv: e.target.value })} />
+              ) : (
+                <p className="font-medium tracking-widest">•••</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">Expiration Date</p>
+              {editing ? (
+                <input className="border p-1 rounded w-full" value={editData.expirationDate} onChange={(e) => setEditData({ ...editData, expirationDate: e.target.value })} placeholder="MM/YY" />
+              ) : (
+                <p className="font-medium tracking-widest">•• / ••</p>
+              )}
+            </div>
           </div>
-          <div>
-            <strong>Email:</strong> {user.email}
-          </div>
-          <div>
-            <strong>Password:</strong> {mask(user.password)}
-          </div>
-          <div>
-            <strong>Card Number:</strong> {mask(user.cardNumber)}
-          </div>
-          <div>
-            <strong>CCV:</strong> {mask(user.ccv)}
-          </div>
-          <div>
-            <strong>Expiration Date:</strong> {mask(user.expirationDate)}
+
+          <div className="mt-6 flex justify-end gap-2">
+            {editing ? (
+              <>
+                <button className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700" onClick={handleSave}>Save</button>
+                <button className="px-4 py-2 rounded-lg bg-gray-300 text-black text-sm font-semibold hover:bg-gray-400" onClick={() => setEditing(false)}>Cancel</button>
+              </>
+            ) : (
+              <button className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700" onClick={() => setEditing(true)}>Edit Information</button>
+            )}
           </div>
         </div>
-      </section>
-
-      {/* Notifications */}
-      <section style={{ marginTop: "2rem" }}>
-        <h2>Notifications</h2>
-        <ul style={{ marginTop: "0.5rem", paddingLeft: "1rem" }}>
-          {notifications.map((note, i) => (
-            <li key={i} style={{ marginBottom: "0.5rem" }}>
-              🔔 {note}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Appearance */}
-      <section style={{ marginTop: "2rem" }}>
-        <h2>Appearance</h2>
-        <div style={{ display: "flex", alignItems: "center", marginTop: "0.5rem" }}>
-          <label htmlFor="darkMode" style={{ marginRight: "0.5rem" }}>Dark Mode</label>
-          <input
-            id="darkMode"
-            type="checkbox"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-          />
-        </div>
-      </section>
+      </div>
     </div>
   );
 }

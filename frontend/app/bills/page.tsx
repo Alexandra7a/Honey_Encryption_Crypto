@@ -1,67 +1,89 @@
 "use client";
 
-const bills = [
-  { name: "Electricity", due: "2026-01-20", amount: 120.5, status: "Pending" },
-  { name: "Water", due: "2026-01-22", amount: 45.75, status: "Paid" },
-  { name: "Internet", due: "2026-01-25", amount: 60, status: "Pending" },
-  { name: "Credit Card", due: "2026-01-30", amount: 350, status: "Pending" },
+import { useState } from "react";
+
+const initialBills = [
+  { name: "Electricity", due: "2026-01-20", amount: 120.5, status: "Pending", category: "Utilities" },
+  { name: "Water", due: "2026-01-22", amount: 45.75, status: "Paid", category: "Utilities" },
+  { name: "Internet", due: "2026-01-25", amount: 60, status: "Pending", category: "Utilities" },
+  { name: "Credit Card", due: "2026-01-30", amount: 350, status: "Pending", category: "Finance" },
+  { name: "Rent", due: "2026-02-01", amount: 1200, status: "Pending", category: "Housing" },
+  { name: "Car Insurance", due: "2026-02-05", amount: 180, status: "Paid", category: "Insurance" },
+  { name: "Streaming Service", due: "2026-02-08", amount: 15.99, status: "Pending", category: "Subscriptions" },
+  { name: "Mobile Phone", due: "2026-02-10", amount: 85, status: "Pending", category: "Utilities" },
 ];
 
 export default function BillsPage() {
+  const [bills, setBills] = useState(initialBills);
+
+  const payBill = (index: number) => {
+    const updated = [...bills];
+    updated[index].status = "Paid";
+    setBills(updated);
+  };
+
+  const totalDue = bills
+    .filter((b) => b.status === "Pending")
+    .reduce((sum, b) => sum + b.amount, 0);
+
   return (
-    <div style={{ padding: "2rem", maxWidth: "700px", margin: "auto" }}>
-      <h1 style={{ marginBottom: "1rem" }}>Bills & Payments</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-3xl font-bold mb-2">Bills & Payments</h1>
+        <p className="text-slate-600 mb-6">Track upcoming bills and manage payments</p>
 
-      <table style={{ width: "100%", borderCollapse: "collapse", boxShadow: "0 0 10px rgba(0,0,0,0.05)" }}>
-        <thead style={{ background: "#f0f0f0" }}>
-          <tr>
-            <th style={{ padding: "0.75rem", textAlign: "left" }}>Bill</th>
-            <th style={{ padding: "0.75rem", textAlign: "center" }}>Due Date</th>
-            <th style={{ padding: "0.75rem", textAlign: "right" }}>Amount ($)</th>
-            <th style={{ padding: "0.75rem", textAlign: "center" }}>Status</th>
-            <th style={{ padding: "0.75rem", textAlign: "center" }}>Action</th>
-          </tr>
-        </thead>
+        <div className="bg-white rounded-2xl shadow-md p-5 mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm text-slate-500">Total Pending Amount</p>
+            <p className="text-2xl font-semibold text-red-600">${totalDue.toFixed(2)}</p>
+          </div>
+          <div className="text-sm text-slate-400">Updated in real-time</div>
+        </div>
 
-        <tbody>
-          {bills.map((bill, i) => (
-            <tr key={i} style={{ borderBottom: "1px solid #e0e0e0" }}>
-              <td style={{ padding: "0.75rem" }}>{bill.name}</td>
-              <td style={{ padding: "0.75rem", textAlign: "center" }}>{bill.due}</td>
-              <td style={{ padding: "0.75rem", textAlign: "right" }}>{bill.amount.toFixed(2)}</td>
-              <td
-                style={{
-                  padding: "0.75rem",
-                  textAlign: "center",
-                  color: bill.status === "Paid" ? "green" : "red",
-                  fontWeight: "bold",
-                }}
-              >
-                {bill.status}
-              </td>
-              <td style={{ padding: "0.75rem", textAlign: "center" }}>
-                {bill.status === "Pending" ? (
-                  <button
-                    style={{
-                      padding: "0.4rem 0.8rem",
-                      background: "#0070f3",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => alert(`Paid ${bill.name} successfully!`)}
+        <div className="overflow-x-auto bg-white rounded-2xl shadow-md">
+          <table className="w-full border-collapse">
+            <thead className="bg-slate-100">
+              <tr>
+                <th className="p-4 text-left">Bill</th>
+                <th className="p-4 text-left">Category</th>
+                <th className="p-4 text-center">Due Date</th>
+                <th className="p-4 text-right">Amount ($)</th>
+                <th className="p-4 text-center">Status</th>
+                <th className="p-4 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bills.map((bill, i: number) => (
+                <tr key={i} className="border-b last:border-none hover:bg-slate-50 transition">
+                  <td className="p-4 font-medium">{bill.name}</td>
+                  <td className="p-4 text-slate-600">{bill.category}</td>
+                  <td className="p-4 text-center">{bill.due}</td>
+                  <td className="p-4 text-right">{bill.amount.toFixed(2)}</td>
+                  <td
+                    className={`p-4 text-center font-semibold ${
+                      bill.status === "Paid" ? "text-green-600" : "text-red-600"
+                    }`}
                   >
-                    Pay Now
-                  </button>
-                ) : (
-                  <span>—</span>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    {bill.status}
+                  </td>
+                  <td className="p-4 text-center">
+                    {bill.status === "Pending" ? (
+                      <button
+                        className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
+                        onClick={() => payBill(i)}
+                      >
+                        Pay Now
+                      </button>
+                    ) : (
+                      <span className="text-slate-400">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
