@@ -107,33 +107,39 @@ if __name__ == "__main__":
         decoded = dte.decode(wrong_key)
         print(f"Wrong key: {wrong_key}, Decoded: {decoded}")
     
-    print(derive_key("my_secret_password", 2))
+    print(derive_key("my_secret_password", b'salt_de_test', 2))
 
-    real_message = input("Enter message to encrypt (or 'exit' to quit): ")
-  
-    messages.append(real_message)
+    print("\nEnter message to decrypt")
+    real_card = input("Enter card number: ")
+    real_balance = input("Enter balance: ")
+
+    #get real data
+    real_data_structured = {"card_number": real_card, "balance": real_balance}
+    real_message_str = json.dumps(real_data_structured, sort_keys=True)
+
+    #add real data to dataset
+    if real_message_str not in messages:
+        messages.append(real_message_str)
+
     #randomize the order of messages for better security in real applications
     random.shuffle(messages)
     dte = SimpleDTE(messages)
     password = input("Enter password: ")
 
-    ciphertext, salt = honey_encrypt(real_message, password, dte)
+    ciphertext, salt = honey_encrypt(real_message_str, password, dte)
 
     while True:
         password_attempt = input("Enter password to decrypt (or 'exit' to quit): ")
         if password_attempt == 'exit':
             break
 
-
         decrypted_message = honey_decrypt(ciphertext, password_attempt, salt, dte)
 
-        if decrypted_message == real_message:
+        if password_attempt == password:
             
             print("Correct password! Message decrypted successfully.")
-            print(f"Decoy Decrypted Message: {decrypted_message}")
+            print(f"Decoy Decrypted Message: {json.dumps(decrypted_message)}")
 
         else:
             print("Incorrect password. Decrypted message may be incorrect.")
-            print(f"Decoy Decrypted Message: {decrypted_message}")
-
-
+            print(f"Decoy Decrypted Message: {json.dumps(decrypted_message)}")
