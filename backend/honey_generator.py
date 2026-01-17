@@ -26,7 +26,7 @@ def generate_honey_data(number_of_entries=1000):
 
 
 if __name__ == "__main__":
-    data = generate_honey_data(1000)
+    data = generate_honey_data(3000)
 
     filename = "honey_data.json"
     with open(filename, "w", encoding='utf-8') as f:
