@@ -26,7 +26,8 @@ def generate_honey_data(number_of_entries=1000):
 
 
 if __name__ == "__main__":
-    data = generate_honey_data(3000)
+    number_of_entries = input("How many fake bank entries would you like to generate?\n")
+    data = generate_honey_data(int(number_of_entries))
 
     filename = "honey_data.json"
     with open(filename, "w", encoding='utf-8') as f:
