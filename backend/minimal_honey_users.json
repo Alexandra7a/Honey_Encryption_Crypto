@@ -1,0 +1,17 @@
+{
+  "username": "alice@example.com",
+  "salt": "a5ffa1f599e0b59f0254f2f5549e88f5",
+  "hashed_password": "474c5f6daed7fb570aa701c23c6e11f01a40c3803725fad0ff955ef09cfd8f45",
+  "real_user_data": {
+    "account_ID": "4f535f9f-e603-49e4-a4cc-5ca93e8fce07",
+    "full_name": "Alice Example",
+    "email": "alice@example.com",
+    "card_info": {
+      "name": "Alice Example",
+      "card_number": "2255116209952169",
+      "cvv": "123",
+      "expiration_date": "09/29"
+    }
+  },
+  "failed_attempts": []
+}

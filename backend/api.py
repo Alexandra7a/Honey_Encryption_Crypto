@@ -4,7 +4,7 @@ from pydantic import BaseModel, EmailStr
 from pydantic_extra_types.payment import PaymentCardNumber
 from typing import List, Optional, Dict
 import uvicorn
-from he import HoneyLoginSystem, User, CardInfo
+from backend.register_he import HoneyLoginSystem, User, CardInfo
 
 app = FastAPI(title="Honey Encryption API", version="1.0.0")
 

@@ -65,12 +65,15 @@ class HoneyLoginSystem:
         """
         self.num_honeywords = num_honeywords
         
-    def _generate_fake_user_data(self, real_data: Dict) -> Dict:
+    def _generate_fake_user_data(self, real_data: Dict, seed:int) -> Dict:
         """Generate plausible fake user data"""
         from honey_generator import generate_honey_data
-        
-        result = generate_honey_data(10,real_data=real_data)
-        fake_data = random.choice(result).copy()          
+        random.seed(seed)
+        # result = generate_honey_data(self.num_honeywords,real_data=real_data)
+        # fake_data = random.choice(result).copy()  
+        result = generate_honey_data(1,real_data=real_data)
+        fake_data = result[0].copy() 
+        random.seed()  # Reset seed       
         return fake_data
         
     def _hash_password(self, password: str, salt: bytes) -> str:

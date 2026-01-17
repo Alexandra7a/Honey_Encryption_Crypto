@@ -25,6 +25,9 @@ def generate_honey_data(number_of_entries=1000,real_data=None):
                 brand = random.choice(ALLOWED_FAKER_BRANDS)
    
         if real_data:
+            first_name = real_data.get("full_name", '').split()[0]
+            last_name = fake.last_name()
+            full_name = f"{first_name} {last_name}"
             real_data_exp=real_data.get("expiration_date")
             if real_data_exp:
                 real_year = int(real_data_exp.split('/')[1])
@@ -39,8 +42,8 @@ def generate_honey_data(number_of_entries=1000,real_data=None):
             # Slightly modify real data to create plausible honey entries
             entry = {
                 "account_ID": fake.uuid4(),
-                "full_name": real_data.get("full_name",'').split()[0] + " " + fake.last_name(),
-                "email": fake.email(),
+                "full_name": full_name,
+                "email": f"{first_name.lower()}.{last_name.lower()}@{fake.free_email_domain()}",
                 "card_number": fake.credit_card_number(card_type=brand),
                 "balance": f"{balance_int}.{balance_cents} RON",
                 "ccv": fake.credit_card_security_code(card_type=brand),
