@@ -106,7 +106,7 @@ if __name__ == "__main__":
     dte = SimpleDTE(messages)
     password = input("Enter password: ")
 
-    ciphertext = honey_encrypt(real_message, password, dte)
+    ciphertext, salt = honey_encrypt(real_message, password, dte)
 
     while True:
         password_attempt = input("Enter password to decrypt (or 'exit' to quit): ")
@@ -114,7 +114,7 @@ if __name__ == "__main__":
             break
 
 
-        decrypted_message = honey_decrypt(ciphertext, password_attempt, dte)
+        decrypted_message = honey_decrypt(ciphertext, password_attempt, salt, dte)
 
         if decrypted_message == real_message:
             
