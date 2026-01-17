@@ -1,6 +1,7 @@
 Cosmin: 
 - Generator de date pentru template din forntend (balace, name, cred ca astea sunt). 
-- Pages:
+Andra
+-  Pages:
   - sign-up page:
     - Name
     - email
@@ -16,3 +17,6 @@ Cosmin:
     - sections left side
     - settings in the right side
     - text after balance
+   
+Ale:
+- legare frontend, backend
