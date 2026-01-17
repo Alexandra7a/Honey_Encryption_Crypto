@@ -4,7 +4,6 @@ import os
 import random
 from typing import Dict, List, Tuple, Optional
 import uuid
-
 from anyio import sleep
 from pydantic import BaseModel,  EmailStr
 from pydantic_extra_types.payment import PaymentCardNumber, PaymentCardBrand
@@ -44,6 +43,7 @@ class MinimalUserDatabaseRecord(BaseModel):
     hashed_password: str
     real_user_data: Dict
     failed_attempts: List[Dict]
+    
 class HoneyLoginSystem:
     """
     Honey Login System - Wrong passwords produce plausible fake user sessions
@@ -98,7 +98,7 @@ class HoneyLoginSystem:
         last_name = fake.last_name()
         full_name = f"{first_name} {last_name}"
         return {
-            "account_ID": str(uuid.uuid4()),
+            "account_ID": fake.uuid4(),
             "full_name": full_name,
             "email": f"{first_name.lower()}.{last_name.lower()}@{fake.free_email_domain()}",
             "card_number": fake.credit_card_number(card_type=brand),
@@ -135,7 +135,7 @@ class HoneyLoginSystem:
         
         # Generate salt for this user
         salt = os.urandom(16)
-        user_data = {
+        real_user_data = {
             "account_ID": str(uuid.uuid4()),
             "full_name": user.full_name,
             "email": user.email,
@@ -145,7 +145,7 @@ class HoneyLoginSystem:
                 username=username,
                 salt=salt,
                 hashed_password=self._hash_password(user.password, salt),
-                real_user_data=user_data,
+                real_user_data=real_user_data,
                 failed_attempts=[]
         )
         
@@ -164,25 +164,26 @@ class HoneyLoginSystem:
                     'expiration_date': card_info.expiration_date
                 }
         
+        # Load existing users or create new list
+        try:
+            with open("minimal_honey_users.json", "r") as f:
+                content = f.read().strip()
+                if content:
+                    all_users = json.loads(content)
+                else:
+                    all_users = []
+        except FileNotFoundError:
+            all_users = []
+        
+        # Add new user to list
+        all_users.append(db_serializable)
+        
+        # Save all users
         with open("minimal_honey_users.json", "w") as f:
-            json.dump(db_serializable, f, indent=2)
+            json.dump(all_users, f, indent=2)
 
         return {"success": True}
                             
-
-    def _generate_honeyword(self, real_password: str) -> str:
-        """Generate a plausible fake password"""
-        variations = [
-            real_password + str(random.randint(0, 99)),  # Add numbers
-            real_password.capitalize(),  # Capitalize
-            real_password + random.choice(['!', '@', '#', '$']),  # Add special char
-            real_password[::-1],  # Reverse
-            real_password.replace('a', '@').replace('e', '3').replace('i', '1'),  # Leetspeak
-            ''.join(random.choices(real_password, k=len(real_password))),  # Scramble
-        ]
-        print(f"Generated honeyword variations for '{real_password}': {variations}")
-        return random.choice(variations)
-    
     async def login(self, username: str, password: str):
         record = self.find_user_in_database(username)
         if record is None:
@@ -213,23 +214,27 @@ class HoneyLoginSystem:
 
 
     def find_user_in_database(self, username: str, filename: str = "minimal_honey_users.json") -> Optional[MinimalUserDatabaseRecord]:
-        """Find user in file"""
+        """Find user in file - expects users stored as array"""
         try:
             with open(filename, 'r') as f:
                 content = f.read().strip()
                 if not content:
                     return None
-                db_serializable = json.loads(content)
-            if db_serializable['username'] == username:
-                # Convert hex back to bytes
-                user_record = MinimalUserDatabaseRecord(
-                    username=db_serializable['username'],
-                    salt=bytes.fromhex(db_serializable['salt']),
-                    hashed_password=db_serializable['hashed_password'],
-                    real_user_data=db_serializable['real_user_data'],
-                    failed_attempts=db_serializable['failed_attempts']
-                )
-                return user_record
+                all_users = json.loads(content)
+            
+            # Search for matching username
+            for db_serializable in all_users:
+                if db_serializable['username'] == username:
+                    # Convert hex back to bytes
+                    user_record = MinimalUserDatabaseRecord(
+                        username=db_serializable['username'],
+                        salt=bytes.fromhex(db_serializable['salt']),
+                        hashed_password=db_serializable['hashed_password'],
+                        real_user_data=db_serializable['real_user_data'],
+                        failed_attempts=db_serializable['failed_attempts']
+                    )
+                    return user_record
+            
             return None
         except FileNotFoundError:
             return None
