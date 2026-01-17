@@ -67,7 +67,7 @@ class HoneyLoginSystem:
         
     def _generate_fake_user_data(self, real_data: Dict, seed:int) -> Dict:
         """Generate plausible fake user data"""
-        from honey_generator import generate_honey_data
+        from backend.register_he.honey_generator import generate_honey_data
         random.seed(seed)
         # result = generate_honey_data(self.num_honeywords,real_data=real_data)
         # fake_data = random.choice(result).copy()  

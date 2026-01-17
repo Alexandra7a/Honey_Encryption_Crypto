@@ -10,6 +10,7 @@ from pydantic_extra_types.payment import PaymentCardNumber, PaymentCardBrand
 from typing import List, Optional
 import base64
 
+DB_USER_FILE = "database/minimal_honey_users.json"
 class CardInfo(BaseModel):
     name: str
     card_number: PaymentCardNumber
@@ -47,28 +48,12 @@ class MinimalUserDatabaseRecord(BaseModel):
 class HoneyLoginSystem:
     """
     Honey Login System - Wrong passwords produce plausible fake user sessions
-    
-    Key Concept:
-    - Each user has 1 real password + N honeywords (fake passwords)
-    - All passwords "work" and return user data
-    - Only the system knows which password is real (via sweetword_index)
-    - Wrong password = fake session + silent alert to admin
     """
     
-    def __init__(self, num_honeywords: int = 19):
-        """
-        Args:
-            num_honeywords: Number of fake passwords per user (default 19 = 20 total with real one)
-            honey_data_file: Path to JSON file containing fake user data
-        """
-        self.num_honeywords = num_honeywords
-        
     def _generate_fake_user_data(self, real_data: Dict, seed:int) -> Dict:
         """Generate plausible fake user data"""
-        from honey_generator import generate_honey_data
-        random.seed(seed)
-        # result = generate_honey_data(self.num_honeywords,real_data=real_data)
-        # fake_data = random.choice(result).copy()  
+        from backend.register_he.honey_generator import generate_honey_data
+        random.seed(seed) 
         result = generate_honey_data(1,real_data=real_data)
         fake_data = result[0].copy() 
         random.seed()  # Reset seed       
@@ -166,7 +151,7 @@ class HoneyLoginSystem:
         
         # Load existing users or create new list
         try:
-            with open("minimal_honey_users.json", "r") as f:
+            with open(DB_USER_FILE, "r") as f:
                 content = f.read().strip()
                 if content:
                     all_users = json.loads(content)
@@ -179,7 +164,7 @@ class HoneyLoginSystem:
         all_users.append(db_serializable)
         
         # Save all users
-        with open("minimal_honey_users.json", "w") as f:
+        with open(DB_USER_FILE, "w") as f:
             json.dump(all_users, f, indent=2)
 
         return {"success": True}
@@ -213,7 +198,7 @@ class HoneyLoginSystem:
         return False, fake_data, {"is_real": False}
 
 
-    def find_user_in_database(self, username: str, filename: str = "minimal_honey_users.json") -> Optional[MinimalUserDatabaseRecord]:
+    def find_user_in_database(self, username: str, filename: str = DB_USER_FILE) -> Optional[MinimalUserDatabaseRecord]:
         """Find user in file - expects users stored as array"""
         try:
             with open(filename, 'r') as f:
@@ -298,7 +283,7 @@ async def test_login(honey_system: HoneyLoginSystem):
 if __name__ == "__main__":
     import asyncio
     
-    honey_system = HoneyLoginSystem(num_honeywords=4)
+    honey_system = HoneyLoginSystem()
     
     # Generate and register user
     #generate_user(honey_system)

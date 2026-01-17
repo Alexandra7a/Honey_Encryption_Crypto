@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 # Initialize honey login system
-honey_system = HoneyLoginSystem(num_honeywords=4)
+honey_system = HoneyLoginSystem()
 
 # Response models
 class RegistrationResponse(BaseModel):
