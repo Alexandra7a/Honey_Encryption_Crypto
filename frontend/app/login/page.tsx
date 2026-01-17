@@ -1,22 +1,30 @@
 "use client";
-import React, { useState } from 'react';
-import styles from './login.module.css';
+import React, { useState } from "react";
+import styles from "./login.module.css";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Email:', email);
-    console.log('Password:', password);
+
+    // Fake validation - replace with real auth
+    if (email && password) {
+      console.log("Logged in:", { email, password });
+      router.replace("/template"); // Redirect to dashboard
+    } else {
+      alert("Please fill in both fields");
+    }
   };
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Banking App Login</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
+
+      <form onSubmit={handleLogin} className={styles.form}>
         <div className={styles.inputGroup}>
           <label htmlFor="email">Email</label>
           <input
@@ -27,6 +35,7 @@ const LoginPage = () => {
             required
           />
         </div>
+
         <div className={styles.inputGroup}>
           <label htmlFor="password">Password</label>
           <input
@@ -37,8 +46,20 @@ const LoginPage = () => {
             required
           />
         </div>
-        <button type="submit" className={styles.submitButton}>Login</button>
+
+        <button type="submit" className={styles.submitButton}>
+          Login
+        </button>
       </form>
+
+      {/* Sign up navigation */}
+      <p style={{ marginTop: "1rem" }}>Don’t have an account?</p>
+      <button
+        onClick={() => router.push("/signup")}
+        style={{ marginTop: "0.5rem" }}
+      >
+        Go to Sign Up
+      </button>
     </div>
   );
 };
