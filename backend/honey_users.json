@@ -1,0 +1,65 @@
+{
+  "username": "alice@example.com",
+  "salt": "e2ed3bef9053eb3a53fb915370a3a91f",
+  "hashed_sweetwords": [
+    "e259b7420a701e192bc8c9f3097cdb9cada2b9be6cd54b335cf78103c53332bf",
+    "96fe01d5e063cf3c3cf088d8ddf0ec2f80dc7c0761e4c4ae12394f8166c1d839",
+    "69f2801840b2afbf48b05878b9ae768a9dfaec5e2c2df091b02aed76d9c5585f",
+    "e8b96b04f65c2ea00dba11bd0c0da8234e29d2b6a07610afc4cae5e6ec52060b",
+    "3a7939b3426a320b2066801f3cda168125b8c9fe004289c6d01ea248bc54c1cc"
+  ],
+  "user_data_list": [
+    {
+      "account_ID": "dce35063-aedb-46c6-899b-18fd1312ab16",
+      "full_name": "Alice Hansen",
+      "email": "sarah72@example.org",
+      "card_number": "340039649120687",
+      "balance": "1018.85 RON",
+      "ccv": "0645",
+      "expiration_date": "05/27",
+      "brand": "amex"
+    },
+    {
+      "account_ID": "b8756187-a70a-4296-80cc-87f9ad0ef790",
+      "full_name": "Alice Stephens",
+      "email": "vfields@example.net",
+      "card_number": "341690516611437",
+      "balance": "9510.92 RON",
+      "ccv": "5097",
+      "expiration_date": "07/26",
+      "brand": "amex"
+    },
+    {
+      "account_ID": "0e72ae0f-35d7-4eaa-8308-590d1c7d4774",
+      "full_name": "Alice Carney",
+      "email": "timothythomas@example.org",
+      "card_number": "4431946431386528",
+      "balance": "9588.35 RON",
+      "ccv": "334",
+      "expiration_date": "11/27",
+      "brand": "visa"
+    },
+    {
+      "account_ID": "ce709d85-5cb5-460f-b306-abe45d75868a",
+      "full_name": "Alice Smith",
+      "email": "sharon70@example.org",
+      "card_number": "4008500901962897",
+      "balance": "5305.10 RON",
+      "ccv": "905",
+      "expiration_date": "07/29",
+      "brand": "visa"
+    },
+    {
+      "account_ID": "5d639bea-7b9d-4a2e-af23-54aba25c1d90",
+      "full_name": "Alice Example",
+      "email": "alice@example.com",
+      "card_number": "2249603290126265",
+      "card_name": "Alice Example",
+      "cvv": "123",
+      "expiration_date": "09/29",
+      "card_type": "other"
+    }
+  ],
+  "real_index": 4,
+  "failed_attempts": []
+}
