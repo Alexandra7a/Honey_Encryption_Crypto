@@ -90,3 +90,11 @@ coverage/
 # System
 Thumbs.db
 desktop.ini
+
+# Database
+backend/database/
+minimal_honey_users.json
+honey_users.json
+*.db
+*.sqlite
+*.sqlite3
