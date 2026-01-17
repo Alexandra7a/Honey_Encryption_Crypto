@@ -1,4 +1,5 @@
 import math
+import json
 
 class SimpleDTE:
     def __init__(self, messages):
@@ -81,10 +82,20 @@ def honey_decrypt(ciphertext, password, salt, dte):
     seed_prime = ciphertext ^ key
     return dte.decode(seed_prime)
 
+def load_honey_database(filename="honey_data.json"):
+    try:
+        with open(filename, "r", encoding='utf-8') as f:
+            data_list = json.load(f)
+
+        return [json.dumps(entry, sort_keys=True) for entry in data_list]
+
+    except FileNotFoundError:
+        print("Error: honey_data.json file not found. Did you run honey_generator.py first?")
+        return []
 
 import random
 if __name__ == "__main__":
-    messages = ['hello', 'world', 'test', 'data']
+    messages = load_honey_database()
     dte = SimpleDTE(messages)
 
     for msg in messages:
