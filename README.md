@@ -1,2 +1,18 @@
 Cosmin: 
 - Generator de date pentru template din forntend (balace, name, cred ca astea sunt). 
+- Pages:
+  - sign-up page:
+    - Name
+    - email
+    - password
+    - message
+    - card number
+    - ccv
+    - expiration date
+
+  - template bank page:
+    - Name
+    - Balance
+    - sections left side
+    - settings in the right side
+    - text after balance
