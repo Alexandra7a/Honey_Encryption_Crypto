@@ -43,7 +43,6 @@ class MinimalUserDatabaseRecord(BaseModel):
     salt: bytes
     hashed_password: str
     real_user_data: Dict
-    failed_attempts: List[Dict]
     
 class HoneyLoginSystem:
     """
@@ -131,7 +130,6 @@ class HoneyLoginSystem:
                 salt=salt,
                 hashed_password=self._hash_password(user.password, salt),
                 real_user_data=real_user_data,
-                failed_attempts=[]
         )
         
         # Convert record to dict and handle bytes serialization
@@ -188,11 +186,6 @@ class HoneyLoginSystem:
             seed
         )
 
-        record.failed_attempts.append({
-            "password_used": password,
-            "timestamp": "now"
-        })
-
         print("login detected")
 
         return False, fake_data, {"is_real": False}
@@ -216,7 +209,6 @@ class HoneyLoginSystem:
                         salt=bytes.fromhex(db_serializable['salt']),
                         hashed_password=db_serializable['hashed_password'],
                         real_user_data=db_serializable['real_user_data'],
-                        failed_attempts=db_serializable['failed_attempts']
                     )
                     return user_record
             
