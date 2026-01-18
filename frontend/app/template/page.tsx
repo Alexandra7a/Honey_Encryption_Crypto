@@ -29,9 +29,9 @@ export default function DashboardPage() {
 
 
   const [notifications, setNotifications] = useState([
-    { text: "New login from Chrome on Windows", time: "2h ago", icon: "💻", read: false },
-    { text: "Monthly statement available", time: "1d ago", icon: "📄", read: false },
-    { text: "Payment reminder: Electricity bill", time: "3d ago", icon: "⚡", read: false },
+    { text: "New login from Chrome on Windows", time: "2h ago", read: false },
+    { text: "Monthly statement available", time: "5d ago", read: false },
+    { text: "Payment reminder: Electricity bill", time: "3d ago", read: false },
   ]);
 
   const news = [
@@ -113,121 +113,58 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen bg-[#f4f0e1]">
       {/* LEFT SIDEBAR */}
-      <aside className="w-56 p-6 flex flex-col gap-3">
+      <aside className="w-64 p-6 flex flex-col gap-3">
         <h2 className="text-xl font-semibold mb-4">Bank Menu</h2>
+
         <ul className="flex flex-col gap-3">
-  {[
-    {
-      label: "Transactions",
-      path: "/transactions",
-      color: "#A78BFA",
-      svg: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          fill="#A78BFA"
-          stroke="black"
-          strokeWidth="1.5"
-        >
-          {/* File outline */}
-          <path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" />
-          {/* Lines/text inside file */}
-          <line x1="8" y1="9" x2="16" y2="9" stroke="black" strokeWidth="1" />
-          <line x1="8" y1="12" x2="16" y2="12" stroke="black" strokeWidth="1" />
-          <line x1="8" y1="15" x2="14" y2="15" stroke="black" strokeWidth="1" />
-        </svg>
-      ),
-    },
-    {
-  label: "Transfers",
-  path: "/transfers",
-  color: "#10B981", // emerald green fill
-  svg: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      width="24"
-      height="24"
-      fill="#10B981" // background color
-      stroke="black" // outline color
-      strokeWidth="1.5"
-    >
-      {/* Circle background */}
-      <circle cx="12" cy="12" r="10" fill="#10B981" stroke="black" strokeWidth="1.5" />
-      
-      {/* Dollar sign */}
-      <path
-        d="M12 7c-1 0-1 2 0 2s1 1 0 1-1 1 0 1 1 2 0 2" 
-        stroke="black"
-        strokeWidth="1.5"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <line x1="12" y1="5" x2="12" y2="19" stroke="black" strokeWidth="1.5" />
-    </svg>
-  ),
-},
-
-    {
-      label: "Investments",
-      path: "/investments",
-      color: "#3B82F6",
-      svg: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          fill="#3B82F6"
-          stroke="black"
-          strokeWidth="1.5"
-        >
-          <rect x="4" y="12" width="4" height="8" stroke="black" fill="#3B82F6" />
-          <rect x="10" y="8" width="4" height="12" stroke="black" fill="#3B82F6" />
-          <rect x="16" y="4" width="4" height="16" stroke="black" fill="#3B82F6" />
-        </svg>
-      ),
-    },
-    {
-      label: "Bills & Payments",
-      path: "/bills",
-      color: "#F59E0B",
-      svg: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          width="24"
-          height="24"
-          fill="#F59E0B"
-          stroke="black"
-          strokeWidth="1.5"
-        >
-          {/* Receipt outline */}
-          <path d="M6 2h12v20H6V2z" />
-          {/* Lines/text */}
-          <line x1="8" y1="6" x2="16" y2="6" stroke="black" strokeWidth="1" />
-          <line x1="8" y1="10" x2="16" y2="10" stroke="black" strokeWidth="1" />
-          <line x1="8" y1="14" x2="16" y2="14" stroke="black" strokeWidth="1" />
-        </svg>
-      ),
-    },
-  ].map((item) => (
-    <li
-      key={item.path}
-      onClick={() => router.push(item.path)}
-      className="flex items-center gap-2 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium"
-    >
-      <div className="w-6 h-6">{item.svg}</div>
-      <span>{item.label}</span>
-    </li>
-  ))}
-</ul>
-
-
-
+          {[
+            {
+              label: "Transactions",
+              path: "/transactions",
+              bg: "bg-[#d0e2f2] group-hover:bg-[#a8c6e0]", // true blue-grey
+              icon: (
+                <DocumentTextIcon className="w-5 h-5 text-[#3b5780]" />
+              ),
+            },
+            {
+              label: "Transfers",
+              path: "/transfers",
+              bg: "bg-[#c6dec6] group-hover:bg-[#acceac]",
+              icon: (
+                <CurrencyDollarIcon className="w-5 h-5 text-emerald-800" />
+              ),
+            },
+            {
+              label: "Investments",
+              path: "/investments",
+              bg: "bg-[#d5e8ff] group-hover:bg-[#b6d5fb]",
+              icon: (
+                <ChartBarIcon className="w-5 h-5 text-[#1b569c]" />
+              ),
+            },
+            {
+              label: "Bills & Payments",
+              path: "/bills",
+              bg: "bg-orange-100 group-hover:bg-orange-200",
+              icon: (
+                <ReceiptPercentIcon className="w-5 h-5 text-orange-700" />
+              ),
+            },
+            ].map((item) => (
+              <li
+                key={item.path}
+                onClick={() => router.push(item.path)}
+                className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
+              >
+                <div
+                  className={`w-10 h-10 flex items-center justify-center rounded-full transition ${item.bg}`}
+                >
+                  {item.icon}
+                </div>
+                <span>{item.label}</span>
+              </li>
+            ))}
+          </ul>
       </aside>
 
       {/* MAIN CONTENT */}
@@ -235,7 +172,7 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold">Welcome, {userData?.first_name || "User"}</h1>
 
         {/* Balance Card */}
-        <div className="mt-6 bg-blue-50 p-6 rounded-2xl shadow-md max-w">
+        <div className="mt-6 bg-[#cfd7cf] p-6 rounded-2xl shadow-md max-w">
           <h2 className="text-xl  mb-2">Account Balance</h2>
           <p className="text-3xl mb-1">
             {userData?.balance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {userData?.currency || "RON"}
@@ -252,7 +189,7 @@ export default function DashboardPage() {
             {news.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-[#fffdf7] p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
+                className="bg-[#fffdf7] p-6 rounded-xl shadow-sm hover:shadow-md  hover:bg-[#faf7ef] transition cursor-pointer"
               >
                 <p className="font-bold text-lg mb-1">{item.title}</p>
                 <p className="text-gray-500 text-sm mb-2">{item.source}</p>
@@ -265,58 +202,78 @@ export default function DashboardPage() {
 
       {/* RIGHT SIDEBAR */}
       <aside className="w-80 p-6 flex flex-col gap-3">
-        <h3 className="text-xl font-semibold mb-4">Settings</h3>
-        <ul className="flex flex-col gap-3">
-          <li
-            onClick={() => router.push("/settings")}
-            className="cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
-          >
-            ⚙️ Settings
-          </li>
+  <h3 className="text-xl font-semibold mb-4">Settings</h3>
 
-          {/* Notifications */}
-          <li
-            className="cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
-            onClick={() => setShowNotifications(!showNotifications)}
-          >
-            <div className="flex justify-between items-center">
-              <span>🔔 Notifications</span>
-              {unreadCount > 0 && (
-                <span className="bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
+  <ul className="flex flex-col gap-3">
 
-            {showNotifications && (
-              <ul className="mt-2 flex flex-col gap-2 max-h-64 overflow-y-auto">
-                {notifications.map((note, idx) => (
-                  <li
-                    key={idx}
-                    onClick={() => handleNotificationClick(idx)}
-                    className={`flex items-start gap-3 bg-gray-50 p-3 rounded-lg shadow hover:shadow-md transition cursor-pointer ${
-                      !note.read ? "font-bold" : "font-normal text-gray-600"
-                    }`}
-                  >
-                    <span className="text-xl">{note.icon}</span>
-                    <div className="flex flex-col">
-                      <p>{note.text}</p>
-                      <span className="text-gray-400 text-xs">{note.time}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
+    {/* Settings */}
+    <li
+      onClick={() => router.push("/settings")}
+      className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
+    >
+      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 group-hover:bg-gray-200 transition">
+        <Cog6ToothIcon className="w-5 h-5 text-gray-700" />
+      </div>
+      <span>Settings</span>
+    </li>
 
-          <li
-            className="cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-emerald-700 text-left"
-            onClick={handleLogout}
-          >
-            🚪 Logout
-          </li>
+    {/* Notifications */}
+    <li
+      className="group cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
+      onClick={() => setShowNotifications(!showNotifications)}
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-100 group-hover:bg-amber-200 transition">
+            <BellIcon className="w-5 h-5 text-amber-700" />
+          </div>
+          <span>Notifications</span>
+        </div>
+
+        {unreadCount > 0 && (
+          <span className="bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+            {unreadCount}
+          </span>
+        )}
+      </div>
+
+      {showNotifications && (
+        <ul className="mt-3 flex flex-col gap-2 max-h-64 overflow-y-auto">
+          {notifications.map((note, idx) => (
+            <li
+              key={idx}
+              onClick={() => handleNotificationClick(idx)}
+              className={`flex items-start gap-3 bg-[#fffbf0] p-3 rounded-lg shadow-sm hover:shadow-md hover:bg-[#faf7ef] transition cursor-pointer ${
+                !note.read ? "font-semibold" : "text-gray-600"
+              }`}
+            >
+              <BellIcon className="w-4 h-4 mt-0.5 text-amber-600" />
+              <div>
+                <p>{note.text}</p>
+                <span className="text-gray-400 text-xs">{note.time}</span>
+              </div>
+            </li>
+          ))}
         </ul>
-      </aside>
+      )}
+    </li>
+
+    {/* Logout */}
+    <li
+      onClick={handleLogout}
+      className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-red-600"
+    >
+      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 group-hover:bg-red-200 transition">
+        <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-600" />
+      </div>
+      <span>Logout</span>
+    </li>
+
+  </ul>
+</aside>
+
+
+
     </div>
   );
 }
