@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from pydantic_extra_types.payment import PaymentCardNumber
 from typing import List, Optional, Dict
 import uvicorn
@@ -31,6 +31,20 @@ class RegistrationResponse(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+    @field_validator('email', mode='before')
+    @classmethod
+    def email_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Email cannot be empty')
+        return v
+
+    @field_validator('password', mode='before')
+    @classmethod
+    def password_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Password cannot be empty')
+        return v
 
 class LoginResponse(BaseModel):
     success: bool

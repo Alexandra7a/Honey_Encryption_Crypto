@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "../user-context";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
+  const { userData, setUserData } = useUser();
 
-  const userName = "John Doe";
-  const balance = 12540.75;
+  useEffect(() => {
+    if (!userData) {
+      router.replace("/login");
+    }
+  }, [router, userData]);
+
+
 
   const [notifications, setNotifications] = useState([
     { text: "New login from Chrome on Windows", time: "2h ago", icon: "💻", read: false },
@@ -79,7 +86,10 @@ export default function DashboardPage() {
     },
   ];
 
-  const handleLogout = () => router.replace("/login");
+  const handleLogout = () => {
+    setUserData(null);
+    router.replace("/login");
+  };
 
   const handleNotificationClick = (index: number) => {
     const newNotifications = [...notifications];
@@ -114,12 +124,14 @@ export default function DashboardPage() {
 
       {/* MAIN CONTENT */}
       <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold">Welcome, {userName}</h1>
+        <h1 className="text-3xl font-bold">Welcome, {userData?.full_name || "User"}</h1>
 
         {/* Balance Card */}
         <div className="mt-6 bg-blue-50 p-6 rounded-2xl shadow-md max-w">
           <h2 className="text-xl  mb-2">Account Balance</h2>
-          <p className="text-3xl mb-1">{balance.toLocaleString()}</p>
+          <p className="text-3xl mb-1">
+            {userData?.balance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {userData?.currency || "RON"}
+          </p>
           <p className="text-gray-600">
             Your balance reflects all completed transactions as of today.
           </p>
