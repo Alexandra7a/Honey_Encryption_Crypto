@@ -6,15 +6,40 @@ import { useRouter } from "next/navigation";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (email && password) {
-      router.replace("/template");
-    } else {
+    if (!email || !password) {
       alert("Please fill in both fields");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:8000/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        router.replace("/template");
+      } else {
+        alert(result.detail || "Login failed. Please check your credentials.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Network error. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,9 +89,10 @@ const LoginPage = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition"
+            disabled={isLoading}
+            className="bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 

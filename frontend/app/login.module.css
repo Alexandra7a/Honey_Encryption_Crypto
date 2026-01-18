@@ -56,3 +56,7 @@
 .submitButton:hover {
   background-color: #0056b3;
 }
+.inputGroup input::placeholder {
+  color: #123d87;
+  opacity: 1;
+}

@@ -117,9 +117,9 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold">Welcome, {userName}</h1>
 
         {/* Balance Card */}
-        <div className="mt-6 bg-blue-50 p-6 rounded-2xl shadow-md max-w-xl">
-          <h2 className="text-xl font-semibold mb-2">Account Balance</h2>
-          <p className="text-3xl font-bold mb-1">${balance.toLocaleString()}</p>
+        <div className="mt-6 bg-blue-50 p-6 rounded-2xl shadow-md max-w">
+          <h2 className="text-xl  mb-2">Account Balance</h2>
+          <p className="text-3xl mb-1">{balance.toLocaleString()}</p>
           <p className="text-gray-600">
             Your balance reflects all completed transactions as of today.
           </p>
