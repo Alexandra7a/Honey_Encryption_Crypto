@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import json
 import os
@@ -5,7 +6,7 @@ import random
 from typing import Dict, List, Tuple, Optional
 import uuid
 from anyio import sleep
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from pydantic_extra_types.payment import PaymentCardNumber, PaymentCardBrand
 from typing import List, Optional
 import base64
@@ -18,6 +19,7 @@ class CardInfo(BaseModel):
     expiration_date: str
     balance: float
     currency: str = "RON"
+    
     @field_validator('name', mode='before')
     @classmethod
     def name_not_empty(cls, v):
@@ -27,32 +29,63 @@ class CardInfo(BaseModel):
 
     @field_validator('cvv', mode='before')
     @classmethod
-    def cvv_not_empty(cls, v):
+    def cvv_not_empty_and_numeric(cls, v):
         if v is None or (isinstance(v, str) and v.strip() == ''):
             raise ValueError('CVV cannot be empty')
+        if not str(v).isdigit():
+            raise ValueError('CVV must contain only digits')
         return v
-
     @field_validator('expiration_date', mode='before')
     @classmethod
     def expiration_date_not_empty(cls, v):
         if v is None or (isinstance(v, str) and v.strip() == ''):
             raise ValueError('Expiration date cannot be empty')
+        if v.count('/') != 1:
+            raise ValueError('Expiration date must be in MM/YY format')
+        month, year = v.split('/')
+        if not (month.isdigit() and year.isdigit()):
+            raise ValueError('Expiration date must contain only digits in MM/YY format')
+        if not (1 <= int(month) <= 12):
+            raise ValueError('Expiration month must be between 01 and 12')
+        if not (len(year) == 2):
+            raise ValueError('Expiration year must be two digits in YY format')
+        if int(year) < 0 or int(year) > int(datetime.datetime.now().year + 10) % 100:
+            raise ValueError('Expiration year must be between 00 and 99 in YY format')
+        if  int(year) < int(datetime.datetime.now().year % 100) or (int(year) == int(datetime.datetime.now().year % 100) and int(month) < datetime.datetime.now().month):
+            raise ValueError('Card cannot be expired')
         return v
 
+    @model_validator(mode='after')
+    def validate_cvv_length(self):
+        """Validate CVV length based on card brand"""
+        brand = self.card_number.brand
+        cvv_len = len(self.cvv)
+        
+        if brand == PaymentCardBrand.amex:
+            if cvv_len != 4:
+                raise ValueError("American Express cards require a 4-digit CVV")
+        else:
+            if cvv_len != 3:
+                raise ValueError("CVV must be 3 digits for this card type")
+        
+        return self
+    @field_validator('balance', mode='before')
+    @classmethod
+    def balance_not_negative(cls, v):
+        if v is None:
+            raise ValueError('Balance cannot be empty')
+        if isinstance(v, str):
+            try:
+                v = float(v)
+            except ValueError:
+                raise ValueError('Balance must be a number')
+        if v < 0:
+            raise ValueError('Balance cannot be negative')
+        return v
+    
     @property
     def brand(self) -> PaymentCardBrand:
-        return self.card_number.brand 
-    def validate_cvv(cls, v) -> str:
-        brand = cls._brand
-        if not v.isdigit():
-            raise ValueError("CVV must be numeric")
-        if brand == PaymentCardBrand.american_express:
-            if len(v) != 4:
-                raise ValueError("AMEX CVV must be 4 digits")
-        else:
-            if len(v) != 3:
-                raise ValueError("CVV must be 3 digits")
-        return v
+        return self.card_number.brand
     
 class User(BaseModel):
     first_name: str

@@ -1,14 +1,34 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from pydantic import BaseModel, EmailStr, field_validator
 from pydantic_extra_types.payment import PaymentCardNumber
 from typing import List, Optional, Dict
 import uvicorn
 import json
-from login_he import HoneyLoginSystem, User, CardInfo
+from login_he import HoneyLoginSystem, User
 
 app = FastAPI(title="Honey Encryption API", version="1.0.0")
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    error_messages = []
+    for error in errors:
+        field = " -> ".join(str(x) for x in error["loc"])
+        message = error["msg"]
+        error_messages.append(f"{field}: {message}")
+    
+    return JSONResponse(
+        status_code=422,
+        content={
+            "success": False,
+            "error": "Validation failed",
+            "details": error_messages
+        },
+    )
 
 # CORS configuration for frontend
 app.add_middleware(
