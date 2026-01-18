@@ -39,7 +39,7 @@ export default function TransfersPage() {
   return (
     <div className="min-h-screen bg-[#f4f0e1] p-8">
       <div className="max-w-md mx-auto">
-      {/* Page title */}
+
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-gray-900">
             Transfer Money
@@ -49,7 +49,6 @@ export default function TransfersPage() {
           </p>
         </div>
 
-      {/* Transfer Form */}
       <form
         onSubmit={handleTransfer}
         className="bg-[#fffdf7] border border-gray-200 rounded-2xl p-6 flex flex-col gap-4"
@@ -78,7 +77,6 @@ export default function TransfersPage() {
         </button>
       </form>
 
-      {/* Recent Transfers */}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">Recent Transfers</h2>
         <ul className="flex flex-col gap-3">

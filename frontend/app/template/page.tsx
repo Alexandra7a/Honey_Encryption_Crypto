@@ -20,11 +20,11 @@ export default function DashboardPage() {
   const [showNotifications, setShowNotifications] = useState(false);
   const { userData, setUserData } = useUser();
 
-  // useEffect(() => {
-  //   if (!userData) {
-  //     router.replace("/login");
-  //   }
-  // }, [router, userData]);
+  useEffect(() => {
+    if (!userData) {
+      router.replace("/login");
+    }
+  }, [router, userData]);
 
 
 
@@ -112,16 +112,15 @@ export default function DashboardPage() {
 
   return (
     <div className="flex min-h-screen bg-[#f4f0e1]">
-      {/* LEFT SIDEBAR */}
+      {/* Left Sidebar */}
       <aside className="w-64 p-6 flex flex-col gap-3">
         <h2 className="text-xl font-semibold mb-4">Bank Menu</h2>
-
         <ul className="flex flex-col gap-3">
           {[
             {
               label: "Transactions",
               path: "/transactions",
-              bg: "bg-[#d0e2f2] group-hover:bg-[#a8c6e0]", // true blue-grey
+              bg: "bg-[#d0e2f2] group-hover:bg-[#a8c6e0]", 
               icon: (
                 <DocumentTextIcon className="w-5 h-5 text-[#3b5780]" />
               ),
@@ -167,7 +166,7 @@ export default function DashboardPage() {
           </ul>
       </aside>
 
-      {/* MAIN CONTENT */}
+      {/* Main Bar */}
       <main className="flex-1 p-8">
         <h1 className="text-3xl font-bold">Welcome, {userData?.first_name || "User"}</h1>
 
@@ -200,80 +199,75 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* RIGHT SIDEBAR */}
+      {/* Right Sidebar */}
       <aside className="w-80 p-6 flex flex-col gap-3">
-  <h3 className="text-xl font-semibold mb-4">Settings</h3>
+        <h3 className="text-xl font-semibold mb-4">Settings</h3>
+        <ul className="flex flex-col gap-3">
 
-  <ul className="flex flex-col gap-3">
+          {/* Settings */}
+          <li
+            onClick={() => router.push("/settings")}
+            className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
+          >
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 group-hover:bg-gray-200 transition">
+              <Cog6ToothIcon className="w-5 h-5 text-gray-700" />
+            </div>
+            <span>Settings</span>
+          </li>
 
-    {/* Settings */}
-    <li
-      onClick={() => router.push("/settings")}
-      className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
-    >
-      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 group-hover:bg-gray-200 transition">
-        <Cog6ToothIcon className="w-5 h-5 text-gray-700" />
-      </div>
-      <span>Settings</span>
-    </li>
-
-    {/* Notifications */}
-    <li
-      className="group cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
-      onClick={() => setShowNotifications(!showNotifications)}
-    >
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-100 group-hover:bg-amber-200 transition">
-            <BellIcon className="w-5 h-5 text-amber-700" />
-          </div>
-          <span>Notifications</span>
-        </div>
-
-        {unreadCount > 0 && (
-          <span className="bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
-            {unreadCount}
-          </span>
-        )}
-      </div>
-
-      {showNotifications && (
-        <ul className="mt-3 flex flex-col gap-2 max-h-64 overflow-y-auto">
-          {notifications.map((note, idx) => (
-            <li
-              key={idx}
-              onClick={() => handleNotificationClick(idx)}
-              className={`flex items-start gap-3 bg-[#fffbf0] p-3 rounded-lg shadow-sm hover:shadow-md hover:bg-[#faf7ef] transition cursor-pointer ${
-                !note.read ? "font-semibold" : "text-gray-600"
-              }`}
-            >
-              <BellIcon className="w-4 h-4 mt-0.5 text-amber-600" />
-              <div>
-                <p>{note.text}</p>
-                <span className="text-gray-400 text-xs">{note.time}</span>
+          {/* Notifications */}
+          <li
+            className="group cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700"
+            onClick={() => setShowNotifications(!showNotifications)}
+          >
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 flex items-center justify-center rounded-full bg-amber-100 group-hover:bg-amber-200 transition">
+                  <BellIcon className="w-5 h-5 text-amber-700" />
+                </div>
+                <span>Notifications</span>
               </div>
-            </li>
-          ))}
+
+              {unreadCount > 0 && (
+                <span className="bg-red-500 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
+            </div>
+
+            {showNotifications && (
+              <ul className="mt-3 flex flex-col gap-2 max-h-64 overflow-y-auto">
+                {notifications.map((note, idx) => (
+                  <li
+                    key={idx}
+                    onClick={() => handleNotificationClick(idx)}
+                    className={`flex items-start gap-3 bg-[#fffbf0] p-3 rounded-lg shadow-sm hover:shadow-md hover:bg-[#faf7ef] transition cursor-pointer ${
+                      !note.read ? "font-semibold" : "text-gray-600"
+                    }`}
+                  >
+                    <BellIcon className="w-4 h-4 mt-0.5 text-amber-600" />
+                    <div>
+                      <p>{note.text}</p>
+                      <span className="text-gray-400 text-xs">{note.time}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+
+          {/* Logout */}
+          <li
+            onClick={handleLogout}
+            className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-red-600"
+          >
+            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 group-hover:bg-red-200 transition">
+              <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-600" />
+            </div>
+            <span>Logout</span>
+          </li>
         </ul>
-      )}
-    </li>
-
-    {/* Logout */}
-    <li
-      onClick={handleLogout}
-      className="group flex items-center gap-3 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-red-600"
-    >
-      <div className="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 group-hover:bg-red-200 transition">
-        <ArrowRightOnRectangleIcon className="w-5 h-5 text-red-600" />
-      </div>
-      <span>Logout</span>
-    </li>
-
-  </ul>
-</aside>
-
-
-
+      </aside>
     </div>
   );
 }
