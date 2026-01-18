@@ -484,7 +484,6 @@ export default function SignupPage() {
                 value={balance}
                 min="0"
                 step="0.01"
-                max="10000000000"
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
