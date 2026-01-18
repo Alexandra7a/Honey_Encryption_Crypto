@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel, EmailStr
 from pydantic_extra_types.payment import PaymentCardNumber
 from typing import List, Optional, Dict
