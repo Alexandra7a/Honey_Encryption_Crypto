@@ -18,7 +18,7 @@ export default function InvestmentsPage() {
     <div className="min-h-screen bg-[#f4f0e1] p-6">
       <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold mb-1">Investment Portfolio</h1>
-        <p className="text-slate-600 mb-6">Overview of your current assets and performance</p>
+        <p className="text-slate-800 mb-6">Overview of your current assets and performance</p>
 
         <div className="grid md:grid-cols-2 gap-4 mb-6">
           <div className="bg-[#fffdf7] rounded-2xl border border-gray-200  shadow-sm hover:shadow-md  hover:bg-[#faf7ef] p-5">
@@ -37,19 +37,19 @@ export default function InvestmentsPage() {
           <table className="w-full border-collapse">
             <thead className="bg-[#f4ecd4] border-b border-gray-200">
               <tr>
-                <th className="p-4 text-left">Asset</th>
-                <th className="p-4 text-left">Type</th>
-                <th className="p-4 text-right">Value ($)</th>
-                <th className="p-4 text-right">Change</th>
-                <th className="p-4 text-right">Allocation</th>
+                <th className="p-4 text-left text-slate-800">Asset</th>
+                <th className="p-4 text-left text-slate-800">Type</th>
+                <th className="p-4 text-right text-slate-800">Value ($)</th>
+                <th className="p-4 text-right text-slate-800">Change</th>
+                <th className="p-4 text-right text-slate-800">Allocation</th>
               </tr>
             </thead>
             <tbody>
               {investments.map((inv, index: number) => (
                 <tr key={index} className="border-b last:border-none  hover:bg-[#faf7ef] transition">
-                  <td className="p-4 font-medium">{inv.name}</td>
-                  <td className="p-4 text-slate-600">{inv.type}</td>
-                  <td className="p-4 text-right">{inv.value.toLocaleString()}</td>
+                  <td className="p-4 font-medium text-slate-800">{inv.name}</td>
+                  <td className="p-4 text-slate-800">{inv.type}</td>
+                  <td className="p-4 text-right text-slate-800">{inv.value.toLocaleString()}</td>
                   <td
                     className={`p-4 text-right font-semibold flex items-center justify-end gap-1 ${
                       inv.change >= 0 ? "text-green-600" : "text-red-600"
