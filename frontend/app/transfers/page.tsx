@@ -37,13 +37,21 @@ export default function TransfersPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Transfer Money</h1>
+    <div className="min-h-screen bg-[#f4f0e1] p-8">
+      <div className="max-w-md mx-auto">
 
-      {/* Transfer Form */}
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Transfer Money
+          </h1>
+          <p className="mt-1 text-sm text-gray-600">
+            
+          </p>
+        </div>
+
       <form
         onSubmit={handleTransfer}
-        className="bg-white shadow-md rounded-2xl p-6 flex flex-col gap-4"
+        className="bg-[#fffdf7] border border-gray-200 rounded-2xl p-6 flex flex-col gap-4"
       >
         <input
           type="text"
@@ -63,31 +71,31 @@ export default function TransfersPage() {
         />
         <button
           type="submit"
-          className="bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+          className="bg-emerald-700 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition"
         >
           Send Money
         </button>
       </form>
 
-      {/* Recent Transfers */}
       <div className="mt-8">
         <h2 className="text-xl font-semibold mb-4">Recent Transfers</h2>
         <ul className="flex flex-col gap-3">
           {history.map((t, idx) => (
             <li
               key={idx}
-              className="flex justify-between bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition"
+              className="flex justify-between items-center bg-[#fffdf7] border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md  hover:bg-[#faf7ef] transition"
             >
               <div>
-                <span className="font-medium">{t.recipient}</span>
+                <span className="text-gray-800 font-medium">{t.recipient}</span>
                 <p className="text-gray-500 text-sm">{t.date}</p>
               </div>
               <div className="font-semibold text-green-600">
-                ${t.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                {t.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })} RON
               </div>
             </li>
           ))}
         </ul>
+      </div>
       </div>
     </div>
   );

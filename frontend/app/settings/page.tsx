@@ -28,8 +28,6 @@ export default function SettingsPage() {
       return;
     }
 
-    // Populate user data from context
-    const fullName = `${userData.first_name || ""} ${userData.middle_name ? userData.middle_name + " " : ""}${userData.last_name || ""}`.trim();
     setUser({
       firstName: userData.first_name || "",
       middleName: userData.middle_name || "",
@@ -40,6 +38,7 @@ export default function SettingsPage() {
       balance: userData.balance?.toString() || "0",
       currency: userData.currency || "RON",
     });
+
     setEditData({
       firstName: userData.first_name || "",
       middleName: userData.middle_name || "",
@@ -55,35 +54,34 @@ export default function SettingsPage() {
   const handleSave = () => {
     setUser(editData);
     setEditing(false);
-    // TODO: Add API call to update user data on backend
   };
 
   const mask = (value: string) => "•".repeat(value.length);
 
   return (
-    <div className="min-h-screen p-6 bg-slate-50 text-slate-900">
+    <div className="min-h-screen p-6 bg-[#f4f0e1] text-slate-900">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold">Account Settings</h1>
           <button
             onClick={() => router.push("/template")}
-            className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-300"
+            className="px-4 py-2 rounded-lg bg-[#d7d2c0] text-gray-700 text-sm font-semibold hover:bg-[#c5bea7]"
           >
             ← Back to Dashboard
           </button>
         </div>
 
-        <div className="bg-white rounded-2xl shadow p-6">
+        <div className="bg-[#fffdf7] rounded-2xl border border-gray-200 p-6">
           <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
 
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-slate-500">First Name</p>
               {editing ? (
-                <input 
-                  className="border p-2 rounded w-full" 
-                  value={editData.firstName} 
-                  onChange={(e) => setEditData({ ...editData, firstName: e.target.value })} 
+                <input
+                  className="border p-2 rounded w-full"
+                  value={editData.firstName}
+                  onChange={(e) => setEditData({ ...editData, firstName: e.target.value })}
                 />
               ) : (
                 <p className="font-medium">{user.firstName}</p>
@@ -93,10 +91,10 @@ export default function SettingsPage() {
             <div>
               <p className="text-slate-500">Middle Name</p>
               {editing ? (
-                <input 
-                  className="border p-2 rounded w-full" 
-                  value={editData.middleName} 
-                  onChange={(e) => setEditData({ ...editData, middleName: e.target.value })} 
+                <input
+                  className="border p-2 rounded w-full"
+                  value={editData.middleName}
+                  onChange={(e) => setEditData({ ...editData, middleName: e.target.value })}
                   placeholder="Optional"
                 />
               ) : (
@@ -107,10 +105,10 @@ export default function SettingsPage() {
             <div>
               <p className="text-slate-500">Last Name</p>
               {editing ? (
-                <input 
-                  className="border p-2 rounded w-full" 
-                  value={editData.lastName} 
-                  onChange={(e) => setEditData({ ...editData, lastName: e.target.value })} 
+                <input
+                  className="border p-2 rounded w-full"
+                  value={editData.lastName}
+                  onChange={(e) => setEditData({ ...editData, lastName: e.target.value })}
                 />
               ) : (
                 <p className="font-medium">{user.lastName}</p>
@@ -120,10 +118,10 @@ export default function SettingsPage() {
             <div>
               <p className="text-slate-500">Email Address</p>
               {editing ? (
-                <input 
-                  className="border p-2 rounded w-full" 
-                  value={editData.email} 
-                  onChange={(e) => setEditData({ ...editData, email: e.target.value })} 
+                <input
+                  className="border p-2 rounded w-full"
+                  value={editData.email}
+                  onChange={(e) => setEditData({ ...editData, email: e.target.value })}
                 />
               ) : (
                 <p className="font-medium">{user.email}</p>
@@ -143,10 +141,11 @@ export default function SettingsPage() {
             <div>
               <p className="text-slate-500">Balance</p>
               <p className="font-medium">
-                {parseFloat(user.balance).toLocaleString(undefined, { 
-                  minimumFractionDigits: 2, 
-                  maximumFractionDigits: 2 
-                })} {user.currency}
+                {parseFloat(user.balance).toLocaleString("ro-RO", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}{" "}
+                {user.currency}
               </p>
             </div>
 
@@ -159,11 +158,26 @@ export default function SettingsPage() {
           <div className="mt-6 flex justify-end gap-2">
             {editing ? (
               <>
-                <button className="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-semibold hover:bg-green-700" onClick={handleSave}>Save</button>
-                <button className="px-4 py-2 rounded-lg bg-gray-300 text-black text-sm font-semibold hover:bg-gray-400" onClick={() => setEditing(false)}>Cancel</button>
+                <button
+                  className="px-4 py-2 rounded-lg bg-emerald-700 text-white text-sm font-semibold hover:bg-emerald-800"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+                <button
+                  className="px-4 py-2 rounded-lg bg-gray-300 text-black text-sm font-semibold hover:bg-gray-400"
+                  onClick={() => setEditing(false)}
+                >
+                  Cancel
+                </button>
               </>
             ) : (
-              <button className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700" onClick={() => setEditing(true)}>Edit Information</button>
+              <button
+                className="px-4 py-2 rounded-lg bg-emerald-700 text-white text-sm font-semibold hover:bg-emerald-800"
+                onClick={() => setEditing(true)}
+              >
+                Edit Information
+              </button>
             )}
           </div>
         </div>
