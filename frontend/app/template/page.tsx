@@ -124,7 +124,7 @@ export default function DashboardPage() {
 
       {/* MAIN CONTENT */}
       <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold">Welcome, {userData?.full_name || "User"}</h1>
+        <h1 className="text-3xl font-bold">Welcome, {userData?.first_name || "User"}</h1>
 
         {/* Balance Card */}
         <div className="mt-6 bg-blue-50 p-6 rounded-2xl shadow-md max-w">

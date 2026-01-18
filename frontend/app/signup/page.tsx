@@ -61,7 +61,9 @@ const formatCardNumber = (value: string) => {
 };
 
 export default function SignupPage() {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -127,9 +129,19 @@ export default function SignupPage() {
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Full name validation
-    if (!fullName.trim()) {
-      newErrors.fullName = "Full name is required";
+    // First name validation
+    if (!firstName.trim()) {
+      newErrors.firstName = "First name is required";
+    }
+
+    // Middle name validation
+    if (!middleName.trim()) {
+      newErrors.middleName = "Middle name is required";
+    }
+
+    // Last name validation
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last name is required";
     }
 
     // Email validation
@@ -221,7 +233,9 @@ export default function SignupPage() {
     }
 
     const signupData = {
-      full_name: fullName,
+      firstName: firstName,
+      middleName: middleName,
+      lastName: lastName,
       email: email,
       password: password,
       card_info: {
@@ -299,28 +313,83 @@ export default function SignupPage() {
           </div>
         )}
 
-        <div className="flex flex-col gap-4" onKeyPress={handleKeyPress}>
-          {/* Full Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              value={fullName}
-              onChange={(e) => {
-                setFullName(e.target.value);
-                if (errors.fullName) setErrors((prev) => ({ ...prev, fullName: "" }));
-              }}
-              className={`w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${
-                errors.fullName ? "border-red-500" : ""
-              }`}
-            />
-            {errors.fullName && (
-              <small className="text-red-500 text-xs mt-1">{errors.fullName}</small>
-            )}
-          </div>
+        
+        <div className="flex flex-col gap-4">
+
+            {/* First Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name
+              </label>
+              <input
+                type="text"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                  if (errors.firstName)
+                    setErrors((prev) => ({ ...prev, firstName: "" }));
+                }}
+                className={`w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.firstName ? "border-red-500" : ""
+                }`}
+              />
+              {errors.firstName && (
+                <small className="text-red-500 text-xs mt-1">
+                  {errors.firstName}
+                </small>
+              )}
+            </div>
+
+            {/* Middle Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Middle Name
+              </label>
+              <input
+                type="text"
+                placeholder="Michael"
+                value={middleName}
+                onChange={(e) => {
+                  setMiddleName(e.target.value);
+                  if (errors.middleName)
+                    setErrors((prev) => ({ ...prev, middleName: "" }));
+                }}
+                className={`w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.middleName ? "border-red-500" : ""
+                }`}
+              />
+              {errors.middleName && (
+                <small className="text-red-500 text-xs mt-1">
+                  {errors.middleName}
+                </small>
+              )}
+            </div>
+
+            {/* Last Name */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name
+              </label>
+              <input
+                type="text"
+                placeholder="Doe"
+                value={lastName}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                  if (errors.lastName)
+                    setErrors((prev) => ({ ...prev, lastName: "" }));
+                }}
+                className={`w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  errors.lastName ? "border-red-500" : ""
+                }`}
+              />
+              {errors.lastName && (
+                <small className="text-red-500 text-xs mt-1">
+                  {errors.lastName}
+                </small>
+              )}
+            </div>
 
           {/* Email */}
           <div>

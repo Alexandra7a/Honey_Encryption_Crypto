@@ -17,7 +17,9 @@ const LoginPage = () => {
 
     if (data.card_info) {
       return {
-        full_name: data.full_name,
+        first_name: data.first_name,
+        middle_name: data.middle_name,
+        last_name: data.last_name,
         email: data.email,
         card_number: data.card_info.card_number,
         cvv: data.card_info.cvv,
@@ -28,7 +30,9 @@ const LoginPage = () => {
     }
 
     return {
-      full_name: data.full_name,
+      first_name: data.first_name,
+      middle_name: data.middle_name,
+      last_name: data.last_name,
       email: data.email,
       card_number: data.card_number,
       cvv: data.cvv,

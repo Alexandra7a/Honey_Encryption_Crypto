@@ -3,7 +3,9 @@
 import { createContext, useContext, useState } from "react";
 
 export interface UserData {
-  full_name: string;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
   email: string;
   card_number: string;
   cvv: string;
