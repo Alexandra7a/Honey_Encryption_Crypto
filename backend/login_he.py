@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import json
 import os
@@ -5,7 +6,7 @@ import random
 from typing import Dict, List, Tuple, Optional
 import uuid
 from anyio import sleep
-from pydantic import BaseModel,  EmailStr
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 from pydantic_extra_types.payment import PaymentCardNumber, PaymentCardBrand
 from typing import List, Optional
 import base64
@@ -15,27 +16,117 @@ class CardInfo(BaseModel):
     name: str
     card_number: PaymentCardNumber
     cvv: str
-    expiration_date: str   
-    @property
-    def brand(self) -> PaymentCardBrand:
-        return self.card_number.brand 
-    def validate_cvv(cls, v) -> str:
-        brand = cls._brand
-        if not v.isdigit():
-            raise ValueError("CVV must be numeric")
-        if brand == PaymentCardBrand.american_express:
-            if len(v) != 4:
-                raise ValueError("AMEX CVV must be 4 digits")
+    expiration_date: str
+    balance: float
+    currency: str = "RON"
+    
+    @field_validator('name', mode='before')
+    @classmethod
+    def name_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Card name cannot be empty')
+        return v
+
+    @field_validator('cvv', mode='before')
+    @classmethod
+    def cvv_not_empty_and_numeric(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('CVV cannot be empty')
+        if not str(v).isdigit():
+            raise ValueError('CVV must contain only digits')
+        return v
+    @field_validator('expiration_date', mode='before')
+    @classmethod
+    def expiration_date_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Expiration date cannot be empty')
+        if v.count('/') != 1:
+            raise ValueError('Expiration date must be in MM/YY format')
+        month, year = v.split('/')
+        if not (month.isdigit() and year.isdigit()):
+            raise ValueError('Expiration date must contain only digits in MM/YY format')
+        if not (1 <= int(month) <= 12):
+            raise ValueError('Expiration month must be between 01 and 12')
+        if not (len(year) == 2):
+            raise ValueError('Expiration year must be two digits in YY format')
+        if int(year) < 0 or int(year) > int(datetime.datetime.now().year + 10) % 100:
+            raise ValueError('Expiration year must be between 00 and 99 in YY format')
+        if  int(year) < int(datetime.datetime.now().year % 100) or (int(year) == int(datetime.datetime.now().year % 100) and int(month) < datetime.datetime.now().month):
+            raise ValueError('Card cannot be expired')
+        return v
+
+    @model_validator(mode='after')
+    def validate_cvv_length(self):
+        """Validate CVV length based on card brand"""
+        brand = self.card_number.brand
+        cvv_len = len(self.cvv)
+        
+        if brand == PaymentCardBrand.amex:
+            if cvv_len != 4:
+                raise ValueError("American Express cards require a 4-digit CVV")
         else:
-            if len(v) != 3:
-                raise ValueError("CVV must be 3 digits")
+            if cvv_len != 3:
+                raise ValueError("CVV must be 3 digits for this card type")
+        
+        return self
+    @field_validator('balance', mode='before')
+    @classmethod
+    def balance_not_negative(cls, v):
+        if v is None:
+            raise ValueError('Balance cannot be empty')
+        if isinstance(v, str):
+            try:
+                v = float(v)
+            except ValueError:
+                raise ValueError('Balance must be a number')
+        if v < 0:
+            raise ValueError('Balance cannot be negative')
         return v
     
+    @property
+    def brand(self) -> PaymentCardBrand:
+        return self.card_number.brand
+    
 class User(BaseModel):
-    full_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    last_name: str
     password: str
     email: EmailStr
     card_info: CardInfo
+
+    @field_validator('first_name', mode='before')
+    @classmethod
+    def first_name_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('First name cannot be empty')
+        return v
+    @field_validator('last_name', mode='before')
+    @classmethod
+    def last_name_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Last name cannot be empty')
+        return v
+    @field_validator('middle_name', mode='before')
+    @classmethod
+    def middle_name_not_empty(cls, v):
+        if v is not None and (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Middle name cannot be empty if provided')
+        return v
+
+    @field_validator('password', mode='before')
+    @classmethod
+    def password_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Password cannot be empty')
+        return v
+
+    @field_validator('email', mode='before')
+    @classmethod
+    def email_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Email cannot be empty')
+        return v
 
 class MinimalUserDatabaseRecord(BaseModel):
     """Separate model for database storage"""
@@ -48,15 +139,6 @@ class HoneyLoginSystem:
     """
     Honey Login System - Wrong passwords produce plausible fake user sessions
     """
-    
-    def _generate_fake_user_data(self, real_data: Dict, seed:int) -> Dict:
-        """Generate plausible fake user data"""
-        from backend.register_he.honey_generator import generate_honey_data
-        random.seed(seed) 
-        result = generate_honey_data(1,real_data=real_data)
-        fake_data = result[0].copy() 
-        random.seed()  # Reset seed       
-        return fake_data
     
     def generate_fake_user_data(self,real_data: Dict, seed: int) -> Dict:
         from faker import Faker
@@ -78,17 +160,17 @@ class HoneyLoginSystem:
 
         fake_year = datetime.date.today().year + random.randint(3, 6)
         end_date = datetime.date(fake_year, 12, 31)
-        first_name = real_data.get("full_name", '').split()[0]
-        last_name = fake.last_name()
-        full_name = f"{first_name} {last_name}"
+        
         return {
             "account_ID": fake.uuid4(),
-            "full_name": full_name,
-            "email": f"{first_name.lower()}.{last_name.lower()}@{fake.free_email_domain()}",
+            "first_name": real_data.get("first_name", fake.first_name()),
+            "middle_name": real_data.get("middle_name", ""),
+            "last_name": real_data.get("last_name", fake.last_name()),
+            "email": real_data.get("email", fake.email()),
             "card_number": fake.credit_card_number(card_type=brand),
-            "cvv": fake.credit_card_security_code(card_type=brand),
+            "currency": real_data.get("currency", "RON"),
             "expiration_date": fake.credit_card_expire(end=end_date),
-            "balance": f"{balance_int}.{balance_cents} RON",
+            "balance": f"{balance_int}.{balance_cents}",
             "card_type": brand,
         }
 
@@ -107,7 +189,7 @@ class HoneyLoginSystem:
         Register a new user with honey encryption protection
         
         Args:
-            user: User object with full_name, email, password, card_info
+            user: User object with first_name, middle_name, last_name, email, password, card_info
             
         Returns:
             Registration status info
@@ -121,7 +203,9 @@ class HoneyLoginSystem:
         salt = os.urandom(16)
         real_user_data = {
             "account_ID": str(uuid.uuid4()),
-            "full_name": user.full_name,
+            "first_name": user.first_name,
+            "middle_name": user.middle_name,
+            "last_name": user.last_name,
             "email": user.email,
             "card_info": user.card_info
         }
@@ -135,6 +219,7 @@ class HoneyLoginSystem:
         # Convert record to dict and handle bytes serialization
         db_serializable = record.dict()
         db_serializable['salt'] = salt.hex()  # Convert bytes to hex string
+        db_serializable['real_user_data']['card_info']['balance']= str(db_serializable['real_user_data']['card_info']['balance'])
         
         # Convert CardInfo to dict if needed
         if 'card_info' in db_serializable['real_user_data']:
@@ -143,13 +228,15 @@ class HoneyLoginSystem:
                 db_serializable['real_user_data']['card_info'] = {
                     'name': card_info.name,
                     'card_number': str(card_info.card_number),
+                    'balance': str(card_info.balance),
+                    'currency': card_info.currency,
                     'cvv': card_info.cvv,
                     'expiration_date': card_info.expiration_date
                 }
         
         # Load existing users or create new list
         try:
-            with open(DB_USER_FILE, "r") as f:
+            with open(DB_USER_FILE, "r", encoding="utf-8") as f:
                 content = f.read().strip()
                 if content:
                     all_users = json.loads(content)
@@ -162,7 +249,7 @@ class HoneyLoginSystem:
         all_users.append(db_serializable)
         
         # Save all users
-        with open(DB_USER_FILE, "w") as f:
+        with open(DB_USER_FILE, "w", encoding="utf-8") as f:
             json.dump(all_users, f, indent=2)
 
         return {"success": True}
@@ -171,13 +258,18 @@ class HoneyLoginSystem:
         record = self.find_user_in_database(username)
         if record is None:
             await sleep(0.5)  # Mitigate timing attacks ! The attacker cannot say that a lower login time makes the password the real one because if not sleep it would take less time to respond than for Generation for honey
-            return False, None, {"error": "User not found"}
+            return False, None, {"error": "User or password not found"}
 
         salt = record.salt
         hashed_attempt = self._hash_password(password, salt)
 
         if hashed_attempt == record.hashed_password:
-            return True, record.real_user_data, {"is_real": True}
+            await sleep(0.3)
+            # Remove sensitive data from returned data for security
+            user_data = record.real_user_data.copy()
+            if 'card_info' in user_data and isinstance(user_data['card_info'], dict):
+                user_data['card_info'].pop('cvv', None)
+            return True, user_data, {"is_real": True}
         # Honey Encryption path
         seed = self.derive_seed(username, password, salt)
 
@@ -187,14 +279,13 @@ class HoneyLoginSystem:
         )
 
         print("login detected")
-
         return False, fake_data, {"is_real": False}
 
 
     def find_user_in_database(self, username: str, filename: str = DB_USER_FILE) -> Optional[MinimalUserDatabaseRecord]:
         """Find user in file - expects users stored as array"""
         try:
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding="utf-8") as f:
                 content = f.read().strip()
                 if not content:
                     return None
@@ -210,6 +301,9 @@ class HoneyLoginSystem:
                         hashed_password=db_serializable['hashed_password'],
                         real_user_data=db_serializable['real_user_data'],
                     )
+                    # Remove CVV from returned data for security
+                    if 'card_info' in user_record.real_user_data and isinstance(user_record.real_user_data['card_info'], dict):
+                        user_record.real_user_data['card_info'].pop('cvv', None)
                     return user_record
             
             return None
@@ -217,20 +311,22 @@ class HoneyLoginSystem:
             return None
         
 
-
-
 def generate_user(honey_system: HoneyLoginSystem):
     from faker import Faker
     fake = Faker()
     # Generate a valid card number using faker
     valid_card = fake.credit_card_number(card_type='mastercard')
     demo_user=User(
-        full_name="Alice Example",
-        email="alice@gmail.com",
+        first_name="Alice",
+        middle_name="B.",
+        last_name="Example",
+        email="alice@example.com",
         password="SecurePass123!",
         card_info=CardInfo(
             name="Alice Example",
             card_number=valid_card,  # Luhn-valid card number
+            balance=1000,
+            currency="RON",
             cvv="123",
             expiration_date="09/29",
             brand=PaymentCardBrand.mastercard

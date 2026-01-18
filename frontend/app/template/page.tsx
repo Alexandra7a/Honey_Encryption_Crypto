@@ -1,14 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import {
+  DocumentTextIcon,
+  ArrowRightIcon,
+  ChartBarIcon,
+  ReceiptPercentIcon,
+  Cog6ToothIcon,
+  BellIcon,
+  CurrencyDollarIcon,
+  ArrowRightOnRectangleIcon,
+} from "@heroicons/react/24/outline";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "../user-context";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
+  const { userData, setUserData } = useUser();
 
-  const userName = "John Doe";
-  const balance = 12540.75;
+  // useEffect(() => {
+  //   if (!userData) {
+  //     router.replace("/login");
+  //   }
+  // }, [router, userData]);
+
+
 
   const [notifications, setNotifications] = useState([
     { text: "New login from Chrome on Windows", time: "2h ago", icon: "💻", read: false },
@@ -79,7 +97,10 @@ export default function DashboardPage() {
     },
   ];
 
-  const handleLogout = () => router.replace("/login");
+  const handleLogout = () => {
+    setUserData(null);
+    router.replace("/login");
+  };
 
   const handleNotificationClick = (index: number) => {
     const newNotifications = [...notifications];
@@ -90,36 +111,135 @@ export default function DashboardPage() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#f4f0e1]">
       {/* LEFT SIDEBAR */}
       <aside className="w-56 p-6 flex flex-col gap-3">
         <h2 className="text-xl font-semibold mb-4">Bank Menu</h2>
         <ul className="flex flex-col gap-3">
-          {[
-            { label: "📄 Transactions", path: "/transactions" },
-            { label: "💸 Transfers", path: "/transfers" },
-            { label: "📈 Investments", path: "/investments" },
-            { label: "🧾 Bills & Payments", path: "/bills" },
-          ].map((item) => (
-            <li
-              key={item.path}
-              onClick={() => router.push(item.path)}
-              className="cursor-pointer bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
-            >
-              {item.label}
-            </li>
-          ))}
-        </ul>
+  {[
+    {
+      label: "Transactions",
+      path: "/transactions",
+      color: "#A78BFA",
+      svg: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="#A78BFA"
+          stroke="black"
+          strokeWidth="1.5"
+        >
+          {/* File outline */}
+          <path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" />
+          {/* Lines/text inside file */}
+          <line x1="8" y1="9" x2="16" y2="9" stroke="black" strokeWidth="1" />
+          <line x1="8" y1="12" x2="16" y2="12" stroke="black" strokeWidth="1" />
+          <line x1="8" y1="15" x2="14" y2="15" stroke="black" strokeWidth="1" />
+        </svg>
+      ),
+    },
+    {
+  label: "Transfers",
+  path: "/transfers",
+  color: "#10B981", // emerald green fill
+  svg: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      fill="#10B981" // background color
+      stroke="black" // outline color
+      strokeWidth="1.5"
+    >
+      {/* Circle background */}
+      <circle cx="12" cy="12" r="10" fill="#10B981" stroke="black" strokeWidth="1.5" />
+      
+      {/* Dollar sign */}
+      <path
+        d="M12 7c-1 0-1 2 0 2s1 1 0 1-1 1 0 1 1 2 0 2" 
+        stroke="black"
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <line x1="12" y1="5" x2="12" y2="19" stroke="black" strokeWidth="1.5" />
+    </svg>
+  ),
+},
+
+    {
+      label: "Investments",
+      path: "/investments",
+      color: "#3B82F6",
+      svg: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="#3B82F6"
+          stroke="black"
+          strokeWidth="1.5"
+        >
+          <rect x="4" y="12" width="4" height="8" stroke="black" fill="#3B82F6" />
+          <rect x="10" y="8" width="4" height="12" stroke="black" fill="#3B82F6" />
+          <rect x="16" y="4" width="4" height="16" stroke="black" fill="#3B82F6" />
+        </svg>
+      ),
+    },
+    {
+      label: "Bills & Payments",
+      path: "/bills",
+      color: "#F59E0B",
+      svg: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          width="24"
+          height="24"
+          fill="#F59E0B"
+          stroke="black"
+          strokeWidth="1.5"
+        >
+          {/* Receipt outline */}
+          <path d="M6 2h12v20H6V2z" />
+          {/* Lines/text */}
+          <line x1="8" y1="6" x2="16" y2="6" stroke="black" strokeWidth="1" />
+          <line x1="8" y1="10" x2="16" y2="10" stroke="black" strokeWidth="1" />
+          <line x1="8" y1="14" x2="16" y2="14" stroke="black" strokeWidth="1" />
+        </svg>
+      ),
+    },
+  ].map((item) => (
+    <li
+      key={item.path}
+      onClick={() => router.push(item.path)}
+      className="flex items-center gap-2 cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium"
+    >
+      <div className="w-6 h-6">{item.svg}</div>
+      <span>{item.label}</span>
+    </li>
+  ))}
+</ul>
+
+
+
       </aside>
 
       {/* MAIN CONTENT */}
       <main className="flex-1 p-8">
-        <h1 className="text-3xl font-bold">Welcome, {userName}</h1>
+        <h1 className="text-3xl font-bold">Welcome, {userData?.first_name || "User"}</h1>
 
         {/* Balance Card */}
         <div className="mt-6 bg-blue-50 p-6 rounded-2xl shadow-md max-w">
           <h2 className="text-xl  mb-2">Account Balance</h2>
-          <p className="text-3xl mb-1">{balance.toLocaleString()}</p>
+          <p className="text-3xl mb-1">
+            {userData?.balance?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {userData?.currency || "RON"}
+          </p>
           <p className="text-gray-600">
             Your balance reflects all completed transactions as of today.
           </p>
@@ -132,7 +252,7 @@ export default function DashboardPage() {
             {news.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
+                className="bg-[#fffdf7] p-6 rounded-xl shadow-sm hover:shadow-md transition cursor-pointer"
               >
                 <p className="font-bold text-lg mb-1">{item.title}</p>
                 <p className="text-gray-500 text-sm mb-2">{item.source}</p>
@@ -149,14 +269,14 @@ export default function DashboardPage() {
         <ul className="flex flex-col gap-3">
           <li
             onClick={() => router.push("/settings")}
-            className="cursor-pointer bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
+            className="cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
           >
             ⚙️ Settings
           </li>
 
           {/* Notifications */}
           <li
-            className="cursor-pointer bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
+            className="cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-gray-700 text-left"
             onClick={() => setShowNotifications(!showNotifications)}
           >
             <div className="flex justify-between items-center">
@@ -190,7 +310,7 @@ export default function DashboardPage() {
           </li>
 
           <li
-            className="cursor-pointer bg-white p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-blue-600 text-left"
+            className="cursor-pointer bg-[#fffdf7] p-3 rounded-xl shadow-sm hover:shadow-md transition font-medium text-emerald-700 text-left"
             onClick={handleLogout}
           >
             🚪 Logout

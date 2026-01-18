@@ -1,14 +1,34 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-from pydantic import BaseModel, EmailStr
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from pydantic import BaseModel, EmailStr, field_validator
 from pydantic_extra_types.payment import PaymentCardNumber
 from typing import List, Optional, Dict
 import uvicorn
 import json
-from login_he import HoneyLoginSystem, User, CardInfo
+from login_he import HoneyLoginSystem, User
 
 app = FastAPI(title="Honey Encryption API", version="1.0.0")
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = exc.errors()
+    error_messages = []
+    for error in errors:
+        field = " -> ".join(str(x) for x in error["loc"])
+        message = error["msg"]
+        error_messages.append(f"{field}: {message}")
+    
+    return JSONResponse(
+        status_code=422,
+        content={
+            "success": False,
+            "error": "Validation failed",
+            "details": error_messages
+        },
+    )
 
 # CORS configuration for frontend
 app.add_middleware(
@@ -31,6 +51,20 @@ class RegistrationResponse(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+
+    @field_validator('email', mode='before')
+    @classmethod
+    def email_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Email cannot be empty')
+        return v
+
+    @field_validator('password', mode='before')
+    @classmethod
+    def password_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Password cannot be empty')
+        return v
 
 class LoginResponse(BaseModel):
     success: bool
@@ -58,7 +92,7 @@ async def get_docs():
 async def health():
     # Count users from file
     try:
-        with open("minimal_honey_users.json", "r") as f:
+        with open("minimal_honey_users.json", "r", encoding="utf-8") as f:
             data = json.load(f)
             user_count = 1 if data else 0
     except:
@@ -109,5 +143,25 @@ async def login(request: LoginRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/user")
+def get_user(email: EmailStr):
+    try:
+        user = honey_system.find_user_in_database(email)
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        # Return only serializable user data, exclude binary salt and hashed password
+        return {
+            "success": True,
+            "user": {
+                "username": user.username,
+                "real_user_data": user.real_user_data
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
