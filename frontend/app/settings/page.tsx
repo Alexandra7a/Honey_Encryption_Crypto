@@ -1,23 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "../user-context";
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const { userData } = useUser();
+  
   const [user, setUser] = useState({
-    name: "John Doe",
-    email: "johndoe@example.com",
-    password: "mypassword123",
-    cardNumber: "1234 5678 9012 3456",
-    ccv: "123",
-    expirationDate: "12/26",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    email: "",
+    cardNumber: "",
+    expirationDate: "",
+    balance: "",
+    currency: "",
   });
 
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState(user);
 
+  useEffect(() => {
+    if (!userData) {
+      router.replace("/login");
+      return;
+    }
+
+    // Populate user data from context
+    const fullName = `${userData.first_name || ""} ${userData.middle_name ? userData.middle_name + " " : ""}${userData.last_name || ""}`.trim();
+    setUser({
+      firstName: userData.first_name || "",
+      middleName: userData.middle_name || "",
+      lastName: userData.last_name || "",
+      email: userData.email || "",
+      cardNumber: userData.card_number || "",
+      expirationDate: userData.expiration_date || "",
+      balance: userData.balance?.toString() || "0",
+      currency: userData.currency || "RON",
+    });
+    setEditData({
+      firstName: userData.first_name || "",
+      middleName: userData.middle_name || "",
+      lastName: userData.last_name || "",
+      email: userData.email || "",
+      cardNumber: userData.card_number || "",
+      expirationDate: userData.expiration_date || "",
+      balance: userData.balance?.toString() || "0",
+      currency: userData.currency || "RON",
+    });
+  }, [userData, router]);
+
   const handleSave = () => {
     setUser(editData);
     setEditing(false);
+    // TODO: Add API call to update user data on backend
   };
 
   const mask = (value: string) => "•".repeat(value.length);
@@ -25,64 +63,96 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen p-6 bg-slate-50 text-slate-900">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Account Settings</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Account Settings</h1>
+          <button
+            onClick={() => router.push("/template")}
+            className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-300"
+          >
+            ← Back to Dashboard
+          </button>
+        </div>
 
         <div className="bg-white rounded-2xl shadow p-6">
           <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
 
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-slate-500">Full Name</p>
+              <p className="text-slate-500">First Name</p>
               {editing ? (
-                <input className="border p-1 rounded w-full" value={editData.name} onChange={(e) => setEditData({ ...editData, name: e.target.value })} />
+                <input 
+                  className="border p-2 rounded w-full" 
+                  value={editData.firstName} 
+                  onChange={(e) => setEditData({ ...editData, firstName: e.target.value })} 
+                />
               ) : (
-                <p className="font-medium">{user.name}</p>
+                <p className="font-medium">{user.firstName}</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">Middle Name</p>
+              {editing ? (
+                <input 
+                  className="border p-2 rounded w-full" 
+                  value={editData.middleName} 
+                  onChange={(e) => setEditData({ ...editData, middleName: e.target.value })} 
+                  placeholder="Optional"
+                />
+              ) : (
+                <p className="font-medium">{user.middleName || "—"}</p>
+              )}
+            </div>
+
+            <div>
+              <p className="text-slate-500">Last Name</p>
+              {editing ? (
+                <input 
+                  className="border p-2 rounded w-full" 
+                  value={editData.lastName} 
+                  onChange={(e) => setEditData({ ...editData, lastName: e.target.value })} 
+                />
+              ) : (
+                <p className="font-medium">{user.lastName}</p>
               )}
             </div>
 
             <div>
               <p className="text-slate-500">Email Address</p>
               {editing ? (
-                <input className="border p-1 rounded w-full" value={editData.email} onChange={(e) => setEditData({ ...editData, email: e.target.value })} />
+                <input 
+                  className="border p-2 rounded w-full" 
+                  value={editData.email} 
+                  onChange={(e) => setEditData({ ...editData, email: e.target.value })} 
+                />
               ) : (
                 <p className="font-medium">{user.email}</p>
               )}
             </div>
 
             <div>
-              <p className="text-slate-500">Password</p>
-              {editing ? (
-                <input type="password" className="border p-1 rounded w-full" value={editData.password} onChange={(e) => setEditData({ ...editData, password: e.target.value })} />
-              ) : (
-                <p className="font-medium tracking-widest">{mask(user.password)}</p>
-              )}
-            </div>
-
-            <div>
               <p className="text-slate-500">Card Number</p>
-              {editing ? (
-                <input className="border p-1 rounded w-full" value={editData.cardNumber} onChange={(e) => setEditData({ ...editData, cardNumber: e.target.value })} />
-              ) : (
-                <p className="font-medium">{mask(user.cardNumber)}</p>
-              )}
-            </div>
-
-            <div>
-              <p className="text-slate-500">CVV</p>
-              {editing ? (
-                <input type="password" className="border p-1 rounded w-full" value={editData.ccv} onChange={(e) => setEditData({ ...editData, ccv: e.target.value })} />
-              ) : (
-                <p className="font-medium tracking-widest">•••</p>
-              )}
+              <p className="font-medium">{mask(user.cardNumber)}</p>
             </div>
 
             <div>
               <p className="text-slate-500">Expiration Date</p>
-              {editing ? (
-                <input className="border p-1 rounded w-full" value={editData.expirationDate} onChange={(e) => setEditData({ ...editData, expirationDate: e.target.value })} placeholder="MM/YY" />
-              ) : (
-                <p className="font-medium tracking-widest">•• / ••</p>
-              )}
+              <p className="font-medium tracking-widest">•• / ••</p>
+            </div>
+
+            <div>
+              <p className="text-slate-500">Balance</p>
+              <p className="font-medium">
+                {parseFloat(user.balance).toLocaleString(undefined, { 
+                  minimumFractionDigits: 2, 
+                  maximumFractionDigits: 2 
+                })} {user.currency}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-slate-500">Currency</p>
+              <p className="font-medium">{user.currency}</p>
             </div>
           </div>
 

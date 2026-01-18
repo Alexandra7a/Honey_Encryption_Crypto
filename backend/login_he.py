@@ -236,7 +236,7 @@ class HoneyLoginSystem:
         
         # Load existing users or create new list
         try:
-            with open(DB_USER_FILE, "r") as f:
+            with open(DB_USER_FILE, "r", encoding="utf-8") as f:
                 content = f.read().strip()
                 if content:
                     all_users = json.loads(content)
@@ -249,7 +249,7 @@ class HoneyLoginSystem:
         all_users.append(db_serializable)
         
         # Save all users
-        with open(DB_USER_FILE, "w") as f:
+        with open(DB_USER_FILE, "w", encoding="utf-8") as f:
             json.dump(all_users, f, indent=2)
 
         return {"success": True}
@@ -264,9 +264,12 @@ class HoneyLoginSystem:
         hashed_attempt = self._hash_password(password, salt)
 
         if hashed_attempt == record.hashed_password:
-            await sleep(0.3) 
-            record.real_user_data.pop("cvv",None) # Remove CVV from returned data for security
-            return True, record.real_user_data, {"is_real": True}
+            await sleep(0.3)
+            # Remove sensitive data from returned data for security
+            user_data = record.real_user_data.copy()
+            if 'card_info' in user_data and isinstance(user_data['card_info'], dict):
+                user_data['card_info'].pop('cvv', None)
+            return True, user_data, {"is_real": True}
         # Honey Encryption path
         seed = self.derive_seed(username, password, salt)
 
@@ -282,7 +285,7 @@ class HoneyLoginSystem:
     def find_user_in_database(self, username: str, filename: str = DB_USER_FILE) -> Optional[MinimalUserDatabaseRecord]:
         """Find user in file - expects users stored as array"""
         try:
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding="utf-8") as f:
                 content = f.read().strip()
                 if not content:
                     return None
@@ -298,6 +301,9 @@ class HoneyLoginSystem:
                         hashed_password=db_serializable['hashed_password'],
                         real_user_data=db_serializable['real_user_data'],
                     )
+                    # Remove CVV from returned data for security
+                    if 'card_info' in user_record.real_user_data and isinstance(user_record.real_user_data['card_info'], dict):
+                        user_record.real_user_data['card_info'].pop('cvv', None)
                     return user_record
             
             return None
