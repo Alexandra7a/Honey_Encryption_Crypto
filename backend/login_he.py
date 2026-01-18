@@ -55,16 +55,30 @@ class CardInfo(BaseModel):
         return v
     
 class User(BaseModel):
-    full_name: str
+    first_name: str
+    middle_name: Optional[str] = None
+    last_name: str
     password: str
     email: EmailStr
     card_info: CardInfo
 
-    @field_validator('full_name', mode='before')
+    @field_validator('first_name', mode='before')
     @classmethod
-    def full_name_not_empty(cls, v):
+    def first_name_not_empty(cls, v):
         if v is None or (isinstance(v, str) and v.strip() == ''):
-            raise ValueError('Full name cannot be empty')
+            raise ValueError('First name cannot be empty')
+        return v
+    @field_validator('last_name', mode='before')
+    @classmethod
+    def last_name_not_empty(cls, v):
+        if v is None or (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Last name cannot be empty')
+        return v
+    @field_validator('middle_name', mode='before')
+    @classmethod
+    def middle_name_not_empty(cls, v):
+        if v is not None and (isinstance(v, str) and v.strip() == ''):
+            raise ValueError('Middle name cannot be empty if provided')
         return v
 
     @field_validator('password', mode='before')
@@ -113,15 +127,14 @@ class HoneyLoginSystem:
 
         fake_year = datetime.date.today().year + random.randint(3, 6)
         end_date = datetime.date(fake_year, 12, 31)
-        first_name = real_data.get("full_name", '').split()[0]
-        last_name = fake.last_name()
-        full_name = f"{first_name} {last_name}"
+        
         return {
             "account_ID": fake.uuid4(),
-            "full_name": full_name,
-            "email": f"{first_name.lower()}.{last_name.lower()}@{fake.free_email_domain()}",
+            "first_name": real_data.get("first_name", fake.first_name()),
+            "middle_name": real_data.get("middle_name", ""),
+            "last_name": real_data.get("last_name", fake.last_name()),
+            "email": real_data.get("email", fake.email()),
             "card_number": fake.credit_card_number(card_type=brand),
-            "cvv": fake.credit_card_security_code(card_type=brand),
             "currency": real_data.get("currency", "RON"),
             "expiration_date": fake.credit_card_expire(end=end_date),
             "balance": f"{balance_int}.{balance_cents}",
@@ -143,7 +156,7 @@ class HoneyLoginSystem:
         Register a new user with honey encryption protection
         
         Args:
-            user: User object with full_name, email, password, card_info
+            user: User object with first_name, middle_name, last_name, email, password, card_info
             
         Returns:
             Registration status info
@@ -157,7 +170,9 @@ class HoneyLoginSystem:
         salt = os.urandom(16)
         real_user_data = {
             "account_ID": str(uuid.uuid4()),
-            "full_name": user.full_name,
+            "first_name": user.first_name,
+            "middle_name": user.middle_name,
+            "last_name": user.last_name,
             "email": user.email,
             "card_info": user.card_info
         }
@@ -171,6 +186,7 @@ class HoneyLoginSystem:
         # Convert record to dict and handle bytes serialization
         db_serializable = record.dict()
         db_serializable['salt'] = salt.hex()  # Convert bytes to hex string
+        db_serializable['real_user_data']['card_info']['balance']= str(db_serializable['real_user_data']['card_info']['balance'])
         
         # Convert CardInfo to dict if needed
         if 'card_info' in db_serializable['real_user_data']:
@@ -216,6 +232,7 @@ class HoneyLoginSystem:
 
         if hashed_attempt == record.hashed_password:
             await sleep(0.3) 
+            record.real_user_data.pop("cvv",None) # Remove CVV from returned data for security
             return True, record.real_user_data, {"is_real": True}
         # Honey Encryption path
         seed = self.derive_seed(username, password, salt)
@@ -226,7 +243,6 @@ class HoneyLoginSystem:
         )
 
         print("login detected")
-
         return False, fake_data, {"is_real": False}
 
 
@@ -256,16 +272,16 @@ class HoneyLoginSystem:
             return None
         
 
-
-
 def generate_user(honey_system: HoneyLoginSystem):
     from faker import Faker
     fake = Faker()
     # Generate a valid card number using faker
     valid_card = fake.credit_card_number(card_type='mastercard')
     demo_user=User(
-        full_name="Alice Example",
-        email="alice@gmail.com",
+        first_name="Alice",
+        middle_name="B.",
+        last_name="Example",
+        email="alice@example.com",
         password="SecurePass123!",
         card_info=CardInfo(
             name="Alice Example",
