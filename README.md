@@ -302,20 +302,6 @@ Edit `frontend/next.config.ts` to configure:
 - Build settings
 - Environment variables
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit your changes: `git commit -m 'Add feature'`
-4. Push to the branch: `git push origin feature-name`
-5. Submit a pull request
-
-## 📜 License
-
-This project is for educational purposes to demonstrate cryptographic concepts.
-
 ## 🔗 References
 
 - [Honey Encryption Paper](https://eprint.iacr.org/2013/454.pdf) by Juels & Ristenpart
@@ -323,10 +309,3 @@ This project is for educational purposes to demonstrate cryptographic concepts.
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [Next.js Documentation](https://nextjs.org/docs)
 
-## 📞 Support
-
-For questions or issues, please open an issue on GitHub or contact the maintainers.
-
----
-
-**⚠️ Disclaimer**: This is an educational project demonstrating security concepts. Do not use in production without proper security auditing and additional security measures.
