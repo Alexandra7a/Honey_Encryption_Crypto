@@ -302,10 +302,10 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f4f0e1] to-[#f4f0e1] p-6">
+      <div className="bg-[#fffdf7] rounded-2xl shadow-xl p-8 w-full max-w-lg">
         <h1 className="text-3xl font-bold mb-2 text-center text-gray-800">Create Account</h1>
-        <p className="text-center text-gray-600 mb-6">Sign up with Honey Encryption</p>
+        <p className="text-center text-gray-600 mb-6">Sign up to your banking dashboard</p>
 
         {generalError && (
           <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg mb-4">
@@ -576,7 +576,7 @@ export default function SignupPage() {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-white"
+                className="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-[#fffdf7]"
               >
                 <option value="RON">RON</option>
                 <option value="USD">USD</option>
@@ -590,7 +590,7 @@ export default function SignupPage() {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition mt-4 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-emerald-800 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transition mt-4 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Creating Account..." : "Create Account"}
           </button>
@@ -598,7 +598,7 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-gray-600 mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline font-medium">
+          <a href="/login" className="text-emerald-700 hover:underline font-medium">
             Sign in
           </a>
         </p>

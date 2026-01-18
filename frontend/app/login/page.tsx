@@ -93,8 +93,8 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f4f0e1] to-[#f4f0e1] p-6">
+      <div className="bg-[#fffdf7] rounded-3xl shadow-2xl p-8 max-w-md w-full">
         {/* Header */}
         <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
         <p className="text-center text-gray-500 mb-6">
@@ -160,7 +160,7 @@ const LoginPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-emerald-800 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
@@ -171,7 +171,7 @@ const LoginPage = () => {
           <span>Don’t have an account? </span>
           <button
             onClick={() => router.push("/signup")}
-            className="text-blue-600 font-semibold hover:underline"
+            className="text-emerald-700 font-semibold hover:underline"
           >
             Create account
           </button>
