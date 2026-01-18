@@ -316,12 +316,6 @@ Contributions are welcome! Please follow these steps:
 
 This project is for educational purposes to demonstrate cryptographic concepts.
 
-## 👥 Authors
-
-- **Cosmin** - Honey data generator
-- **Andra** - Frontend pages and UI design
-- **Alexandra** - Frontend-backend integration
-
 ## 🔗 References
 
 - [Honey Encryption Paper](https://eprint.iacr.org/2013/454.pdf) by Juels & Ristenpart
